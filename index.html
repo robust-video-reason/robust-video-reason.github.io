@@ -1284,616 +1284,292 @@ blockquote {
 <script type="text/javascript" src="../js/hidebib.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,600,400italic,600italic,300,300italic' rel='stylesheet' type='text/css'>
     <head>
-        <title>Self-Refining Video Sampling</title>
+        <title>ROVA: Robust Video Alignment for Real-World Reasoning</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta property="og:description" content="Self-Refining Video Sampling"/>
+        <meta property="og:description" content="ROVA: Robust Video Alignment for Real-World Reasoning"/>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link href="https://fonts.googleapis.com/css2?family=FontAwesome" rel="stylesheet">
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:creator" content="@sangwon.jang">
-        <meta name="twitter:title" content="Self-Refining Video Sampling">
+        <meta name="twitter:creator" content="@jaehong.yoon">
+        <meta name="twitter:title" content="ROVA: Robust Video Alignment">
     </head>
 
 <body>
 <div class="container">
     <div class="paper-title">
     <h1>
-        Self-Refining Video Sampling
+        Are Video Reasoning Models Ready to Go Outside?
     </h1>
+    <h2 style="text-align:center; font-size:var(--text-2xl); margin-top:-0.5rem;">ROVA: Robust Video Alignment under Real-World Perturbations</h2>
     </div>
 
     <div id="authors">
         <center>
             <div class="author-row-new">
-                <a href="https://agwmon.github.io">Sangwon Jang<sup>1,*</sup></a>,
-                <a href="https://taekyungki.github.io">Taekyung Ki<sup>1,*</sup></a>,
-                <a href="https://harryjo97.github.io">Jaehyeong Jo<sup>1,*</sup></a>,
-                <a href="https://www.sainingxie.com/">Saining Xie<sup>2</sup></a>,
-                <a href="https://jaehong31.github.io">Jaehong Yoon<sup>3,&dagger;</sup></a>,
-                <!-- <a href="https://jaehong31.github.io">Jaehong Yoon<sup>3</sup></a>, -->
-                <a href="http://www.sungjuhwang.com">Sung Ju Hwang<sup>1,4,&dagger;</sup></a>
-                <!-- <a href="http://www.sungjuhwang.com">Sung Ju Hwang<sup>1,4</sup></a> -->
+                <a href="https://yangfanhe.github.io">Yangfan He<sup>1,*</sup></a>,
+                <a href="https://changgyuboo.github.io">Changgyu Boo<sup>2,*</sup></a>,
+                <a href="https://jaehong31.github.io">Jaehong Yoon<sup>3,&dagger;</sup></a>
             </div>
         </center>
         <center>
         <div class="affiliations">
-            <span><sup>1</sup>KAIST</span>&nbsp;&nbsp;&nbsp;
-            <span><sup>2</sup>NYU</span>&nbsp;&nbsp;&nbsp;
-            <span><sup>3</sup>NTU Singapore</span>&nbsp;&nbsp;&nbsp;
-            <span><sup>4</sup>DeepAuto.ai</span> <br>
+            <span><sup>1</sup>NTU Singapore</span>&nbsp;&nbsp;&nbsp;
+            <span><sup>2</sup>Korea University</span>&nbsp;&nbsp;&nbsp;
+            <span><sup>3</sup>NTU Singapore</span><br>
         </div>
 
-        <!-- <p class="equal-contrib"><span><sup>*</sup>Equal Contribution</span></p> -->
-        <p class="equal-contrib"><span><sup>*</sup>Equal Contribution,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sup>&dagger;</sup>Equal Advising</span></p>
+        <p class="equal-contrib"><span><sup>*</sup>Equal Contribution,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sup>&dagger;</sup>Corresponding Author</span></p>
         
         <div class="affil-row">
-            <div class="venue text-center"><b>ArXiv 2026</b></div>
+            <div class="venue text-center"><b>arXiv 2026</b></div>
         </div>
         </center>
 
         <div style="clear: both">
             <div class="paper-btn-parent">
-                <a class="paper-btn" href="https://arxiv.org/abs/2601.18577">
+                <a class="paper-btn" href="https://arxiv.org/abs/2601.18577"> <!-- placeholder link -->
                     <span class="fas fa-file-alt"></span> 
                     Paper
                 </a>   
-                <a class="github-btn" href="https://github.com/agwmon/self-refine-video">
+                <a class="github-btn" href="https://github.com/robust-video-reason/robust-video-reason">
                     <span class="fab fa-github"></span> 
                     Code
                 </a>           
         </div>
         </div>
-        <!-- <div class="video-carousel auto-carousel" data-carousel="c5" data-autoplay="true">
-            <button class="carousel-btn left" onclick="moveCarousel('c5', -1)">&#10094;</button>
-            <button class="carousel-btn right" onclick="moveCarousel('c5', 1)">&#10095;</button>
-            <div class="video-carousel-track" id="carousel-c5">
-                <video controls playsinline muted autoplay>
-                    <source src="assets/videos/rumi_interface_01.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline muted>
-                    <source src="assets/videos/rumi_interface_02.mp4" type="video/mp4">
-                </video>
-            </div>
-        </div> -->
+
+        <!-- Teaser video grid: three examples of ROVA under perturbations -->
         <div class="video-grid-three">
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/motion/ours/79.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/wani2v/ours/robot_074.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/etc/graph_ours.mp4" type="video/mp4">
-                </video>
+            <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
+                <source src="assets/rova/teaser_occlusion.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
+                <source src="assets/rova/teaser_weather.mp4" type="video/mp4">
+            </video>
+            <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
+                <source src="assets/rova/teaser_motion.mp4" type="video/mp4">
+            </video>
         </div>
-        <div class="video-grid-two">
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/etc/physics.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/etc/spatial.mp4" type="video/mp4">
-                </video>
-        </div>
-        <br>
+        <p class="caption" style="text-align:center;">ROVA enables robust reasoning under occlusion, adverse weather, and camera shake — failure modes for standard VLMs (example frames).</p>
+
         <blockquote class="tldr-blockquote">    
             <p>
-                <b>[TL;DR]</b> We present <b>self-refining video sampling</b> method that reuses a pre-trained video generator as a denoising autoencoder to iteratively refine latents.
-                With ~50% additional NFEs, it improves physical realism (e.g., motion coherence and physics alignment) <i>without any external verifier, training, or dataset</i>.
+                <b>[TL;DR]</b> We propose <b>ROVA</b>, a training framework that uses structured spatio‑temporal corruptions, self‑reflective difficulty‑aware sampling, and dual‑branch alignment to make video reasoning models robust to real‑world disturbances (weather, occlusion, camera motion). We also introduce <b>PVRBench</b>, a benchmark with 12 perturbation types across 27 scenes. ROVA improves accuracy by up to 24% and reasoning quality by over 9% on perturbed videos, while also boosting clean performance.
             </p>
         </blockquote>
     </div>
     <br>
 
     <section>
-        <h2>Methods</h2>
+        <h2>Abstract</h2>
         <hr>
+        <p>
+            In real-world deployment, vision-language models often encounter disturbances such as weather, occlusion, and camera motion. Under such conditions, their understanding and reasoning degrade substantially, revealing a gap between clean, controlled evaluation settings and real-world robustness. To address this limitation, we propose ROVA, a novel training framework that improves robustness by modeling a robustness-aware consistency reward under spatio-temporal corruptions. ROVA introduces a difficulty-aware online training strategy that prioritizes informative samples based on the model's evolving capability. Specifically, it continuously re-estimates sample difficulty via self-reflective evaluation, enabling adaptive training with a robustness-aware consistency reward. We also introduce PVRBench, a new benchmark that injects real-world perturbations into embodied video datasets to assess both accuracy and reasoning quality under realistic disturbances. We evaluate ROVA and baselines on PVRBench, UrbanVideo, and VisBench, where open-source and proprietary models suffer up to 35% and 28% drops in accuracy and reasoning under realistic perturbations. ROVA effectively mitigates performance degradation, boosting relative accuracy by at least 24% and reasoning by over 9% compared with baseline models (QWen2.5/3-VL, InternVL2.5, Embodied-R). These gains transfer to clean standard benchmarks, yielding consistent improvements.
+        </p>
+    </section>
 
-        <!-- <p>
-            We further introduce a self-refining mechanism that iteratively improves generation quality and temporal consistency.
-        </p> -->
-        <h3>Flow Matching as Denoising Autoencoder</h3>
-            <p>
-                We revisit the connection between diffusion models and denoising autoencoders (DAE) [1-2], and extend this connection to interpret flow matching as a DAE from a training objective perspective.
-                In particular, up to a time-dependent weighting, the flow-matching loss is equivalent to a standard DAE [3] reconstruction objective.
-                <div class="side-by-side equation-compare">
-                    <figure>
-                        <img src="assets/items/fm_loss.png" alt="Flow matching loss">
-                    </figure>
-                    <figure>
-                        <img src="assets/items/dae_loss.png" alt="DAE loss">
-                    </figure>
-                </div>
+    <section>
+        <h2>ROVA: Robust Video Alignment</h2>
+        <hr>
+        <div class="method-figure">
+            <img src="assets/rova/fig2_overview.png" alt="ROVA overview" style="width:100%; max-width:900px;">
+            <p class="caption"><b>Figure 2:</b> ROVA consists of (1) structured spatio-temporal corruption, (2) self-reflective difficulty-aware training, and (3) dual-branch alignment with GRPO.</p>
+        </div>
 
-            
-            
-                for which the model learns to denoise the corrupted input $z_t$ back to the clean sample $z_1$. 
-            </p>
-            <div class="wrap-figure">
-                <div class="wrap-figure-text">
-                    <p>
-                        Thus, flow matching trained model can be used as a time-conditioned DAE.
-                        At inference time, we repurpose the pre-trained model as DAE, <i>self-refiner</i>, iteratively refining samples toward the data manifold.
-                    </p>
-                </div>
-                <div class="wrap-figure-media">
-                    <div class="wrap-figure-item">
-                        <figure>
-                            <img src="assets/items/pnp.png" alt="PnP iteration">
-                        </figure>
-                        <span class="wrap-figure-caption">From a DAE perspective, <b>Predict</b> acts as a denoiser that maps a noisy state $z_t$ toward a clean sample, while <b>Perturb</b> injects noise by interpolating with Gaussian noise at level $t$. Together, they form a simple corrupt–reconstruct loop for DAE-style refinement.</span>
-                    </div>
-                    <div class="wrap-figure-item">
-                        <figure>
-                            <img src="assets/items/pnp-3.png" alt="PnP multiple">
-                        </figure>
-                        <span class="wrap-figure-caption">At a fixed noise level $t$, we iteratively apply them to refine $z_t$, an operation we call <b>Predict-and-Perturb (P&P)</b>. Repeating this process for a few iterations $k$ gradually steers latents toward higher density regions (i.e., data manifold).</span>
-                    </div>
-                </div>
-            </div>
-        
-        <br><br>
-        <!-- <h3>Self-Refining Video Sampling</h3> -->
+        <h3>1. Structured Spatio-Temporal Corruption</h3>
+        <p>We apply realistic perturbations (weather, lighting, occlusion, camera motion) with spatial grounding and temporal coherence. Each video is paired with its corrupted counterpart for dual-branch alignment.</p>
 
+        <h3>2. Self‑Reflective Difficulty‑Aware Training</h3>
+        <p>The model evaluates its own confidence and difficulty on corrupted samples. Easy samples are discarded, hard ones stored in a memory buffer for later replay, and informative ones used for training. This forms an adaptive curriculum that evolves with the model.</p>
+
+        <h3>3. Dual‑Branch Alignment with GRPO</h3>
+        <p>We enforce output consistency between clean and perturbed branches using a reward composed of format, accuracy, and alignment rewards (reasoning + answer similarity). Optimization is done via Group Relative Policy Optimization (GRPO).</p>
+    </section>
+
+    <section>
+        <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
+        <hr>
+        <p>PVRBench systematically injects 12 realistic perturbation types (lighting: dusk, night, overexposure, shadow; camera: translation, zoom, rotation; occlusion: static, dynamic; weather: fog, rain, snow) into 9K videos from UrbanVideo and VSI-Bench, creating 51K QA pairs. All perturbations are spatially aware and temporally coherent.</p>
         <div class="side-by-side">
             <figure>
-                <img src="assets/items/figure_1_concept.png" alt="Figure a">
-                <figcaption class="caption"><b>Concept of the self-refining video sampling.</b> Within the same noise level, the video latent $z_t$ is refined as the predicted endpoint $\hat{z}_1$ is pulled toward the data manifold. </figcaption>
+                <img src="assets/rova/table1_benchmark_comparison.png" alt="Table 1: Benchmark comparison">
+                <figcaption class="caption"><b>Table 1:</b> Comparison with existing benchmarks. PVRBench is the only one with synthetic, spatial, temporal perturbations.</figcaption>
             </figure>
             <figure>
-                <img src="assets/items/figure_2.png" alt="Figure b">
-                <figcaption class="caption"><b>Sampling comparison on 2D synthetic dataset.</b> <b>(a-b)</b> P&P generates samples closer to the data manifold compared to the Euler solver. <b>(c-d)</b> When fixing the timestep, iterative P&P pulls the prediction $\hat{z}_1$ closer to the data manifold</figcaption>
+                <img src="assets/rova/fig3_perturbation_types.png" alt="Figure 3: Perturbation types">
+                <figcaption class="caption"><b>Figure 3:</b> Visualization of the four perturbation categories.</figcaption>
             </figure>
         </div>
-        <!-- <p> 
-            Mirroring the corrupt-reconstruct structure of a DAE, P&P performs an inner-loop refinement at each noise level, progressively pulling the latent toward <b>higher-density regions of the learned video distribution</b>. This refinement promotes temporally coherent and physically plausible videos. As illustrated by the 2D toy experiment, P&P generates samples that lie closer to the data manifold.
-        </p> -->
-        <p>
-            In practice, only 2–3 iterations are sufficient to improve temporal coherence and physical plausibility. The refined state $z_t^*:= z^{(K)}_{t}$ is then used as the updated state and passed to the next ODE step, enabling plug-and-play integration with existing solvers by simply replacing $z_t$ with $z_t^*$.
-        </p>
-            
-            <p>
-            <br>
-            [1] Vincent Pascal, A Connection Between Score Matching and Denoising Autoencoders, Neural computation, 2011
-            <br>
-            [2] Song & Ermon, Generative Modeling by Estimating Gradients of the Data Distribution, NeurIPS, 2019
-            <br>
-            [3] Bengio et al., Generalized Denoising Auto-encoders as Generative Models, NeurIPS, 2013
-        </p>
-
-        <br>
-        <h3>Uncertainty-aware Predict-and-Perturb</h3>
-        <p>
-            However, we observe that multiple P&P updates ($K \geq 3$) with classifier-free guidance can lead to over-saturation or simplification in static regions such as the background.
-            To address this, we propose an <b>Uncertainty-aware P&P</b> that selectively refines only the locally uncertain regions.
-            Specifically, we estimate the model confidence of the prediction, $\mathbf{U}=\|\hat{z}_1^{(k)}-\hat{z}_1^{(k+1)}\|_1,$ which measures how sensitive the prediction is to the Perturb step.
-
-            <div class="video-grid-three">
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/items/basket-video.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/items/basket-unc.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/items/basket-overlay.mp4" type="video/mp4">
-                </video>
-            </div>
-            <br>
-            Here, we apply the P&P update only to regions where the uncertainty $\mathbf{U}$ exceeds a predefined threshold $\tau$.
-            Notably, it <b><i>does not require any additional model evaluations</i></b> (NFE) since both predictions are already computed during the P&P process. Please refer to the paper for more details.
-        </p>
-        
-
     </section>
-    
+
     <section>
-        <h2>Results</h2>
+        <h2>Main Results</h2>
         <hr>
-        <h3>Motion Enhanced Video Generation with Wan2.2-A14B T2V</h3>
-        <div class="hover-instruction">
-            <i class="fas fa-search-plus"></i>
-            <span>Hover over each video to zoom in</span>
+        <h3>Performance on PVRBench</h3>
+        <div style="overflow-x: auto;">
+            <img src="assets/rova/table2_main_results.png" alt="Table 2: Main results" style="width:100%;">
         </div>
-        <p>Wan2.2-A14B already generates human motion reasonably well, but our method can substantially further improve it.</p>
-        <!-- Motion Comparison Carousel: 1 carousel with 2 pages, each page has 4x3 grid (4 methods x 3 samples) -->
-        <div class="video-carousel" data-carousel="motion">
-            <button class="carousel-btn left" onclick="moveCarousel('motion', -1)">&#10094;</button>
-            <button class="carousel-btn right" onclick="moveCarousel('motion', 1)">&#10095;</button>
-            <div class="video-carousel-track" id="carousel-motion">
-                <!-- Page 1: samples 5, 10, 41 -->
-                <div class="motion-compare-slide">
-                    <div class="motion-compare-grid-4x3">
-                        <!-- Row 1: Ours -->
-                        <div class="ours-row-wrapper">
-                            <p class="row-label">Ours</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/ours/49.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/ours/70.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/ours/79.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                        <!-- Row 2: Base -->
-                        <div class="base-row-wrapper">
-                            <p class="row-label">Base</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/base/49.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">Base</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/base/70.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">Base</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/base/79.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">Base</p> -->
-                            </div>
-                        </div>
-                        <!-- Row 3: NFE×2 -->
-                        <div class="nfe-row-wrapper">
-                            <p class="row-label">NFE×2</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/nfex2/49.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">NFE×2</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/nfex2/70.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">NFE×2</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/nfex2/79.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">NFE×2</p> -->
-                            </div>
-                        </div>
-                        <!-- Row 4: FlowMo -->
-                        <div class="flowmo-row-wrapper">
-                            <p class="row-label">FlowMo</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/flowmo/49.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">FlowMo</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/flowmo/70.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">FlowMo</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/flowmo/79.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">FlowMo</p> -->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="prompt-grid-3">
-                        <p class="video-prompt">A sprinter explodes out of the starting blocks, body at a 45-degree angle, transitioning into an upright running posture.</p>
-                        <p class="video-prompt">A trapeze artist releases their bar, performs a triple somersault in mid-air, and is caught by the catcher on the opposing bar.</p>
-                        <p class="video-prompt">A gymnast on a pommel horse swings their legs in wide circles (flares), supporting their entire weight on alternating hands.</p>
-                    </div>
-                </div>
-                <div class="motion-compare-slide">
-                    <div class="motion-compare-grid-4x3">
-                        <!-- Row 1: Ours -->
-                        <div class="ours-row-wrapper">
-                            <p class="row-label">Ours</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/ours/5.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/ours/10.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/ours/41.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                        <!-- Row 2: Base -->
-                        <div class="base-row-wrapper">
-                            <p class="row-label">Base</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/base/5.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">Base</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/base/10.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">Base</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/base/41.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">Base</p> -->
-                            </div>
-                        </div>
-                        <!-- Row 3: NFE×2 -->
-                        <div class="nfe-row-wrapper">
-                            <p class="row-label">NFE×2</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/nfex2/5.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">NFE×2</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/nfex2/10.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">NFE×2</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/nfex2/41.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">NFE×2</p> -->
-                            </div>
-                        </div>
-                        <!-- Row 4: FlowMo -->
-                        <div class="flowmo-row-wrapper">
-                            <p class="row-label">FlowMo</p>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/flowmo/5.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">FlowMo</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/flowmo/10.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">FlowMo</p> -->
-                            </div>
-                            <div class="motion-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/motion/flowmo/41.mp4" type="video/mp4">
-                                </video>
-                                <!-- <p class="motion-label">FlowMo</p> -->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="prompt-grid-3">
-                        <p class="video-prompt">A sword fighter parries a heavy blow from an opponent’s axe, causing the axe to slide down the blade and spark against the crossguard.</p>
-                        <p class="video-prompt">A basketball hits the rim, bounces straight up, hits the backboard, and finally falls through the net.</p>
-                        <p class="video-prompt">A parkour athlete runs up a vertical wall, grabs the ledge, and muscles up to stand on the roof in one fluid motion.</p>
-                    </div>
-                </div>
-                <!-- Page 2: samples 49, 70, 79 -->
+        <p class="caption"><b>Table 2:</b> ROVA consistently outperforms proprietary and open-source models across all perturbation types and reasoning quality metrics (higher is better, except Fragility ↓). Gains are especially pronounced under weather and occlusion.</p>
 
-            </div>
+        <h3>Training Efficiency</h3>
+        <div class="side-by-side" style="gap:var(--space-md);">
+            <figure>
+                <img src="assets/rova/table3_efficiency.png" alt="Table 3: Efficiency">
+                <figcaption class="caption"><b>Table 3:</b> ROVA achieves higher accuracy with fewer GPU hours and less data than Video-R1.</figcaption>
+            </figure>
+            <figure>
+                <img src="assets/rova/fig4_curriculum_analysis.png" alt="Figure 4: Curriculum analysis">
+                <figcaption class="caption"><b>Figure 4:</b> Self-reflective evaluation dynamically discards easy samples and reclassifies difficult ones as training progresses.</figcaption>
+            </figure>
         </div>
 
-        <!-- <div class="video-carousel" data-carousel="c3">
-            <button class="carousel-btn left" onclick="moveCarousel('c3', -1)">&#10094;</button>
-            <button class="carousel-btn right" onclick="moveCarousel('c3', 1)">&#10095;</button>
-        <p> We also reprouce INFP, denoted as INFP*, and compare with it.</p>
-        <div class="video-carousel-track" id="carousel-c3">
-                <video controls playsinline>
-                    <source src="assets/videos/01_compare_interactive_01.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline>
-                    <source src="assets/videos/01_compare_interactive_02.mp4" type="video/mp4">
-                </video>
-            </div>
+        <h3>Ablation Studies</h3>
+        <div class="side-by-side" style="gap:var(--space-md);">
+            <figure>
+                <img src="assets/rova/fig5a_ablation_components.png" alt="Figure 5a: Component ablation">
+                <figcaption class="caption"><b>(a)</b> Impact of each ROVA component.</figcaption>
+            </figure>
+            <figure>
+                <img src="assets/rova/fig5b_mask_ablation.png" alt="Figure 5b: Mask styles">
+                <figcaption class="caption"><b>(b)</b> Structured masks generalize better than random masking.</figcaption>
+            </figure>
         </div>
-        <br> -->
+    </section>
 
-        <h3>Image-to-Video Robotics Video Generation with Cosmos-predict2.5-2B</h3>
-        <p> Our method is also applicable to Image-to-Video generation.
-Applied to Cosmos-Predict2.5-2B, it reduces common robotics artifacts such as unstable grasps and implausible interactions, and produces more consistent motion than rejection sampling with Cosmos-Reason1-7B (best-of-4). This may be useful for downstream tasks such as vision-language-action (VLA) models, where even small artifacts can significantly affect perception and action.</p>
-        <figure style="text-align: center;">
-            <img src="assets/items/table_robot.png" alt="Table Robot" style="width: min(50%, 100vw - 2rem); min-width: min(20rem, 100%);">
-            <figcaption class="caption"><b>PAI-Bench-G</b> evaluation results on robotics I2V generaiton. Grasp and Robot-QA are measure by Gemini 3 Flash.</figcaption>
+    <section>
+        <h2>Qualitative Analysis</h2>
+        <hr>
+        <p>ROVA enables models to maintain correct reasoning even under severe perturbations. Below, we show examples of ROVA‑trained Qwen2.5‑VL‑7B performing obstacle avoidance and target identification under night/low‑light and heavy rain.</p>
+        <figure>
+            <img src="assets/rova/fig6_qualitative.png" alt="Figure 6: Qualitative examples" style="width:100%;">
+            <figcaption class="caption"><b>Figure 6:</b> ROVA successfully reasons about scene layout and task goals despite glare, rain, and occlusion.</figcaption>
         </figure>
 
-        <!-- Robot Video Comparison Carousel: 2 slides for cosmos and wani2v -->
-        <div class="video-carousel" data-carousel="robot">
-            <button class="carousel-btn left" onclick="moveCarousel('robot', -1)">&#10094;</button>
-            <button class="carousel-btn right" onclick="moveCarousel('robot', 1)">&#10095;</button>
-            <div class="video-carousel-track" id="carousel-robot">
-                <!-- Slide 1: Cosmos -->
+        <!-- Video comparison carousel: ROVA vs baselines under perturbations -->
+        <div class="hover-instruction">
+            <i class="fas fa-search-plus"></i>
+            <span>Hover over videos to zoom in and compare ROVA with baselines under different corruptions</span>
+        </div>
+
+        <div class="video-carousel" data-carousel="rova_compare">
+            <button class="carousel-btn left" onclick="moveCarousel('rova_compare', -1)">&#10094;</button>
+            <button class="carousel-btn right" onclick="moveCarousel('rova_compare', 1)">&#10095;</button>
+            <div class="video-carousel-track" id="carousel-rova_compare">
+                <!-- Slide 1: Occlusion -->
                 <div class="motion-compare-slide">
-                    <h4 style="text-align: center; margin-bottom: var(--space-sm);">Cosmos-Predict2.5-2B</h4>
+                    <h4 style="text-align:center;">Occlusion</h4>
                     <div class="robot-compare-grid-3x3">
                         <div class="ours-row-wrapper">
-                            <p class="row-label">Ours</p>
+                            <p class="row-label">ROVA (Ours)</p>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/ours/robot_008.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_occ_ours_1.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/ours/robot_028.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_occ_ours_2.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/ours/robot_064.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_occ_ours_3.mp4" type="video/mp4">
                                 </video>
                             </div>
                         </div>
                         <div class="base-row-wrapper">
-                            <p class="row-label">Base</p>
+                            <p class="row-label">Baseline (Qwen2.5-VL)</p>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/base/robot_008.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_occ_base_1.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/bon/robot_028.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_occ_base_2.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/base/robot_064.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                        <div class="bon-row-wrapper">
-                            <p class="row-label">Rejection Sampling (best-of-4)</p>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/bon/robot_008.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/base/robot_028.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/cosmos/bon/robot_064.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_occ_base_3.mp4" type="video/mp4">
                                 </video>
                             </div>
                         </div>
-                    </div>
-                    <div class="prompt-grid-3">
-                        <p class="video-prompt">... A robotic arm enters the frame from the left, <span style="color:blue;">lifting the spoon</span> smoothly and deliberately. It moves the spoon across the countertop, <span style="color:blue;">placing it down to the right of the pot</span>...</p>
-                        <p class="video-prompt">... As the video progresses, the robotic arm descends towards the metallic bowl, gripping it with its claw-like mechanism. <span style="color:blue;">It lifts the bowl slightly off the surface, rotates it briefly, and then places it down on the blue cloth at the right side.</span> The robotic arm then retracts, moving back to the initial state. The scene concludes with the metallic bowl now positioned on the blue cloth...</p>
-                        <p class="video-prompt">... As the video progresses, the robotic arm on the left lifts the bread off the wicker basket one by one and <span style="color:blue;">places them into the toaster.</span> Simultaneously, <span style="color:red;">the robotic arm on the right pushes the toast lever [Failure]</span> ...</p>
                     </div>
                 </div>
-                <!-- Slide 2: Wan I2V -->
+                <!-- Slide 2: Weather (Rain/Fog) -->
                 <div class="motion-compare-slide">
-                    <h4 style="text-align: center; margin-bottom: var(--space-sm);">Wan2.2-A14B-I2V</h4>
+                    <h4 style="text-align:center;">Adverse Weather</h4>
                     <div class="robot-compare-grid-3x3">
                         <div class="ours-row-wrapper">
-                            <p class="row-label">Ours</p>
+                            <p class="row-label">ROVA (Ours)</p>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/ours/robot_058.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_weather_ours_1.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/ours/robot_071.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_weather_ours_2.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/ours/robot_074.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_weather_ours_3.mp4" type="video/mp4">
                                 </video>
                             </div>
                         </div>
                         <div class="base-row-wrapper">
-                            <p class="row-label">Base</p>
+                            <p class="row-label">Baseline (Qwen2.5-VL)</p>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/base/robot_058.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_weather_base_1.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/base/robot_071.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_weather_base_2.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <div class="robot-video-item">
                                 <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/base/robot_074.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                        <div class="bon-row-wrapper">
-                            <p class="row-label">Rejection Sampling (best-of-4)</p>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/bon/robot_058.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/bon/robot_071.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/videos/wani2v/bon/robot_074.mp4" type="video/mp4">
+                                    <source src="assets/rova/compare_weather_base_3.mp4" type="video/mp4">
                                 </video>
                             </div>
                         </div>
-                    </div>
-                    <div class="prompt-grid-3">
-                        <p class="video-prompt">... The right robotic arm moves towards the shelf, <span style="color:blue;">picks up a single rectangular box, and places it in the shopping cart</span>...</p>
-                        <p class="video-prompt">... <span style="color:blue;">The robotic arm on the right approaches the red-capped bottle, extending its gripper towards it</span>. Gradually, the gripper closes around the bottle, lifting it slightly off the surface. The other robotic arm remains stationary. By the final frame, the robotic arm has successfully lifted the red-capped bottle, holding it securely in its gripper and <span style="color:blue;">transferring it to the left robotic arm</span>. <span style="color:red;">The scene concludes with the bottle being placed into the teal bowl [Failure]</span>, while the other objects remain in their original positions...</p>
-                        <p class="video-prompt">... A robotic arm with black and metallic components is positioned on the left side of the frame, extending towards the paper bag. The robotic arm then moves closer to the bag, extending its claw-like appendages towards it, indicating an intention to interact with the bag, possibly to pick it up or manipulate it. <span style="color:blue;">The left robotic arm holds the bag steady</span>, while the <span style="color:blue;">right robotic arm places the items into the bag</span>, demonstrating precision and control...</p>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </section>
+
     <section>
-        <h2>Additional Results</h2>
-        <p>See more results in our paper!
-            <div class="video-grid-three">
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/etc/14.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/etc/spatial1.mp4" type="video/mp4">
-                </video>
-                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                    <source src="assets/videos/etc/graph_ours.mp4" type="video/mp4">
-                </video>
-            </div>
-        </p>
+        <h2>Cross‑Benchmark Generalization</h2>
+        <hr>
+        <div class="side-by-side">
+            <figure>
+                <img src="assets/rova/fig19_cross_benchmark.png" alt="Cross-benchmark results">
+                <figcaption class="caption"><b>Figure 19:</b> ROVA improves accuracy on VisBench and UrbanVideo under various perturbations by +14.6% and +12.9% on average.</figcaption>
+            </figure>
+        </div>
     </section>
+
     <section id="bibtex">
         <h2>Citation</h2>
         <hr>
-        <pre><code>@article{jang2026selfrefining,
-    title={Self-Refining Video Sampling}, 
-    author={Sangwon Jang and Taekyung Ki and Jaehyeong Jo and Saining Xie and Jaehong Yoon and Sung Ju Hwang},
-    year={2026},
+        <pre><code>@article{he2026rova,
+    title={Are Video Reasoning Models Ready to Go Outside?},
+    author={He, Yangfan and Boo, Changgyu and Yoon, Jaehong},
     journal={arXiv preprint arXiv:2601.18577},
-}
-            <!-- @article{ki2026avatar,
-    title={Avatar Forcing: Real-Time Interactive Head Avatar Generation for Natural Conversation},
-    author={Ki, Taekyung and Jang, Sangwon and Jo, Jaehyeong and Yoon, Jaehong and Hwang, Sung Ju},
-    journal={arXiv preprint arXiv:2601.00664},
     year={2026}
-} -->
-</code></pre>
-
+}</code></pre>
     </section>
+
     <section>
         <h2>Acknowledgement</h2>
-        <hr> <p>This page is based on <a href="https://sihyun.me/REPA/">REPA</a> and <a href="https://dream2flow.github.io/">Dream2Flow</a>.</p>
+        <hr>
+        <p>This page is based on the <a href="https://github.com/agwmon/self-refine-video">self-refine-video</a> project page template. We thank the authors for sharing.</p>
     </section>
 
 </div>
