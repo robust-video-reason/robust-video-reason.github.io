@@ -1,1577 +1,362 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-
-<script type="text/javascript" charset="utf-8" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROVA: Robust Video Alignment for Real‑World Reasoning</title>
+  <!-- Inter font (clean & modern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", sans-serif;
+      background: #f9fcff;
+      color: #1a2b3c;
+      line-height: 1.5;
     }
-  };
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-const carouselState = new Map();
-const carouselTimers = new Map();
-let activeVideo = null;
-
-function getCarouselTrack(carouselId) {
-    return document.getElementById(`carousel-${carouselId}`);
-}
-
-function getCarouselIndex(carouselId) {
-    return carouselState.get(carouselId) || 0;
-}
-
-function setCarouselIndex(carouselId, index) {
-    carouselState.set(carouselId, index);
-}
-
-function isAnyVideoPlaying(track) {
-    const videos = track.querySelectorAll("video");
-    for (const video of videos) {
-        if (!video.paused && !video.ended && video.readyState > 2) {
-            return true;
-        }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
     }
-    return false;
-}
-
-function isAnyVideoPlayingGlobal() {
-    const videos = document.querySelectorAll("video");
-    for (const video of videos) {
-        if (!video.paused && !video.ended && video.readyState > 2) {
-            return true;
-        }
+    /* hero – bold and clean */
+    .hero {
+      background: linear-gradient(145deg, #0b1e2e, #17354d);
+      color: white;
+      padding: 3.5rem 2rem 4rem;
+      border-radius: 0 0 3rem 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 30px -10px #0a1e2f80;
     }
-    return false;
-}
-
-function tryAutoPlay(video) {
-    if (!video) return;
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {
-            const onReady = () => {
-                video.play().catch(() => {});
-            };
-            video.addEventListener("canplay", onReady, { once: true });
-        });
+    .hero h1 {
+      font-size: clamp(2.8rem, 8vw, 5.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
     }
-}
-
-function moveCarousel(carouselId, direction) {
-    const track = getCarouselTrack(carouselId);
-    if (!track) return;
-    const items = track.children.length;
-    if (!items) return;
-
-    const nextIndex = (getCarouselIndex(carouselId) + direction + items) % items;
-    setCarouselIndex(carouselId, nextIndex);
-    track.style.transform = `translateX(-${nextIndex * 100}%)`;
-
-    const carousel = document.querySelector(`.video-carousel[data-carousel="${carouselId}"]`);
-    if (carousel && carousel.dataset.autoplay === "true" && !isAnyVideoPlayingGlobal()) {
-        const activeVideo = track.children[nextIndex]?.querySelector("video");
-        tryAutoPlay(activeVideo);
+    .hero .subtitle {
+      font-size: 1.9rem;
+      font-weight: 300;
+      color: #b0e0ff;
+      margin: 0.5rem 0 1.5rem;
     }
-}
-
-function startCarouselAutoRotate(carouselId, intervalMs = 3500) {
-    if (carouselTimers.has(carouselId)) return;
-    const timer = setInterval(() => {
-        const track = getCarouselTrack(carouselId);
-        if (!track) return;
-        if (!isAnyVideoPlaying(track) && !isAnyVideoPlayingGlobal()) {
-            moveCarousel(carouselId, 1);
-        }
-    }, intervalMs);
-    carouselTimers.set(carouselId, timer);
-}
-
-function pauseOtherVideos(currentVideo) {
-    const keepConcurrent = true;
-    document.querySelectorAll("video").forEach((video) => {
-        if (video !== currentVideo) {
-            if (keepConcurrent && video.dataset.concurrent === "true") {
-                return;
-            }
-            video.pause();
-        }
-    });
-}
-
-function setActiveVideo(video) {
-    if (!video) return;
-    if (video.dataset.concurrent === "true") return;
-    if (activeVideo && activeVideo !== video) {
-        activeVideo.pause();
+    .authors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      font-size: 1.4rem;
+      margin: 1.8rem 0 0.3rem;
     }
-    if (video.hasAttribute("autoplay")) {
-        video.removeAttribute("autoplay");
+    .authors a {
+      color: #ffdb8e;
+      text-decoration: none;
+      border-bottom: 1px solid #ffdb8e80;
     }
-    activeVideo = video;
-    pauseOtherVideos(video);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".video-carousel").forEach((carousel) => {
-        const carouselId = carousel.dataset.carousel;
-        if (!carouselId) return;
-        setCarouselIndex(carouselId, 0);
-        startCarouselAutoRotate(carouselId);
-    });
-
-    document.querySelectorAll(".video-carousel.auto-carousel").forEach((carousel) => {
-        const carouselId = carousel.dataset.carousel;
-        if (!carouselId) return;
-        const track = getCarouselTrack(carouselId);
-        if (!track) return;
-        const videos = track.querySelectorAll("video");
-        videos.forEach((video) => {
-            video.muted = true;
-            video.playsInline = true;
-        });
-    });
-
-    document.querySelectorAll(".video-carousel[data-autoplay='true']").forEach((carousel) => {
-        const carouselId = carousel.dataset.carousel;
-        if (!carouselId) return;
-        const track = getCarouselTrack(carouselId);
-        if (!track) return;
-        const videos = track.querySelectorAll("video");
-        videos.forEach((video) => {
-            video.muted = true;
-            video.playsInline = true;
-        });
-        const firstVideo = track.children[0]?.querySelector("video");
-        if (!isAnyVideoPlayingGlobal()) {
-            tryAutoPlay(firstVideo);
-        }
-    });
-
-    document.querySelectorAll("video[data-autoplay-inline='true']").forEach((video) => {
-        video.muted = true;
-        video.playsInline = true;
-        tryAutoPlay(video);
-    });
-
-    document.querySelectorAll("video").forEach((video) => {
-        video.addEventListener("play", () => setActiveVideo(video));
-    });
-
-    document.addEventListener("play", (event) => {
-        const target = event.target;
-        if (target && target.tagName === "VIDEO") {
-            setActiveVideo(target);
-        }
-    }, true);
-
-    document.addEventListener("playing", (event) => {
-        const target = event.target;
-        if (target && target.tagName === "VIDEO") {
-            setActiveVideo(target);
-        }
-    }, true);
-
-    // Initialize video zoom lens
-    initializeVideoZoom();
-});
-
-function initializeVideoZoom() {
-    // Create zoom lens element
-    const zoomLens = document.createElement('div');
-    zoomLens.className = 'video-zoom-lens';
-    const canvas = document.createElement('canvas');
-    zoomLens.appendChild(canvas);
-    document.body.appendChild(zoomLens);
-
-    const ctx = canvas.getContext('2d');
-    const lensSize = 300;
-    canvas.width = lensSize;
-    canvas.height = lensSize;
-
-    const zoomFactor = 1.4;
-    let currentVideo = null;
-    let animationFrameId = null;
-    let lastMouseEvent = null;
-
-    function showZoomLens(video, e) {
-        currentVideo = video;
-        lastMouseEvent = e;
-        positionZoomLens(e);
-        zoomLens.classList.add('visible');
-        if (!animationFrameId) {
-            animationFrameId = requestAnimationFrame(drawZoom);
-        }
+    .authors a:hover { color: white; border-color: white; }
+    .equal {
+      font-size: 1rem;
+      opacity: 0.8;
+      margin-bottom: 1.2rem;
     }
-
-    function hideZoomLens() {
-        zoomLens.classList.remove('visible');
-        currentVideo = null;
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        }
+    .venue-badge {
+      background: #ffffff20;
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      display: inline-block;
+      font-weight: 600;
+      border: 1px solid #ffffff50;
+      margin-right: 1rem;
     }
-
-    function positionZoomLens(e) {
-        const offsetX = 15;
-        const cursorX = e.clientX;
-        const cursorY = e.clientY;
-        let posX = cursorX + offsetX;
-        let posY = cursorY - Math.round(lensSize / 2);
-
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        if (posX + lensSize > windowWidth - 20) {
-            posX = cursorX - lensSize - offsetX;
-        }
-        if (posY < 20) {
-            posY = 20;
-        } else if (posY + lensSize > windowHeight - 20) {
-            posY = windowHeight - lensSize - 20;
-        }
-
-        zoomLens.style.left = posX + 'px';
-        zoomLens.style.top = posY + 'px';
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin: 2.5rem 0 0.5rem;
     }
-
-    function drawZoom() {
-        if (!currentVideo || !lastMouseEvent) {
-            animationFrameId = null;
-            return;
-        }
-
-        const videoRect = currentVideo.getBoundingClientRect();
-        const videoWidth = currentVideo.videoWidth;
-        const videoHeight = currentVideo.videoHeight;
-
-        if (videoWidth === 0 || videoHeight === 0) {
-            animationFrameId = requestAnimationFrame(drawZoom);
-            return;
-        }
-
-        const mouseX = lastMouseEvent.clientX - videoRect.left;
-        const mouseY = lastMouseEvent.clientY - videoRect.top;
-
-        const scaleX = videoWidth / videoRect.width;
-        const scaleY = videoHeight / videoRect.height;
-
-        const videoMouseX = mouseX * scaleX;
-        const videoMouseY = mouseY * scaleY;
-
-        const zoomRegionWidth = lensSize / zoomFactor;
-        const zoomRegionHeight = lensSize / zoomFactor;
-
-        let sourceX = videoMouseX - zoomRegionWidth / 2;
-        let sourceY = videoMouseY - zoomRegionHeight / 2;
-
-        sourceX = Math.max(0, Math.min(sourceX, videoWidth - zoomRegionWidth));
-        sourceY = Math.max(0, Math.min(sourceY, videoHeight - zoomRegionHeight));
-
-        ctx.clearRect(0, 0, lensSize, lensSize);
-        try {
-            ctx.drawImage(
-                currentVideo,
-                sourceX, sourceY, zoomRegionWidth, zoomRegionHeight,
-                0, 0, lensSize, lensSize
-            );
-        } catch (err) {
-            // Video might not be ready yet
-        }
-
-        animationFrameId = requestAnimationFrame(drawZoom);
+    .btn {
+      padding: 0.9rem 2.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+      transition: 0.2s;
     }
-
-    // Attach to all videos in comparison grids
-    const targetSelectors = [
-        '.motion-compare-grid-4x3 video',
-        '.robot-compare-grid-3x3 video',
-        '.video-grid-three video',
-        '.video-grid-two video'
-    ];
-
-    const comparisonVideos = document.querySelectorAll(targetSelectors.join(', '));
-
-    comparisonVideos.forEach(video => {
-        video.addEventListener('mouseenter', function(e) {
-            showZoomLens(this, e);
-        });
-        video.addEventListener('mousemove', function(e) {
-            if (currentVideo === this) {
-                lastMouseEvent = e;
-                positionZoomLens(e);
-            }
-        });
-        video.addEventListener('mouseleave', function() {
-            hideZoomLens();
-        });
-    });
-}
-</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-<style type="text/css">
-/* Base scale factor - adjust this single value to scale everything */
-:root {
-    --base-font-size: 16px;
-    --scale: 1.1;
-    /* Derived sizes */
-    --text-xs: calc(0.75rem * var(--scale));
-    --text-sm: calc(0.875rem * var(--scale));
-    --text-base: calc(1rem * var(--scale));
-    --text-lg: calc(1.125rem * var(--scale));
-    --text-xl: calc(1.25rem * var(--scale));
-    --text-2xl: calc(1.5rem * var(--scale));
-    --text-3xl: calc(1.875rem * var(--scale));
-    --text-4xl: calc(2.5rem * var(--scale));
-    /* Spacing */
-    --space-xs: calc(0.25rem * var(--scale));
-    --space-sm: calc(0.5rem * var(--scale));
-    --space-md: calc(1rem * var(--scale));
-    --space-lg: calc(1.5rem * var(--scale));
-    --space-xl: calc(2rem * var(--scale));
-    /* Container */
-    --container-max-width: min(75rem, 95vw);
-    /* Image/Video heights - now relative */
-    --img-height-sm: min(5rem, 20vw);
-    --img-height-md: min(15rem, 40vw);
-    --img-height-lg: min(20rem, 50vw);
-}
-
-html {
-    font-size: var(--base-font-size);
-}
-
-body {
-    font-family: "Titillium Web", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    font-weight: 300;
-    font-size: var(--text-base);
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    max-width: var(--container-max-width);
-    padding: 0 var(--space-md);
-    box-sizing: border-box;
-}
-
-h1 {
-    font-weight: 300;
-    line-height: 1.15em;
-    text-align: center;
-    font-size: var(--text-4xl);
-    font-weight: 500;
-}
-
-h2 {
-    font-size: var(--text-2xl);
-    text-align: left;
-    font-weight: 400;
-    margin: var(--space-md) 0 var(--space-xs) 0;
-}
-
-h3 {
-    text-align: left;
-    font-weight: 600;
-    margin: var(--space-md) 0 var(--space-xs) 0;
-}
-
-a:link, a:visited {
-    color: #1f4fd8;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #208799;
-}
-
-b {
-    font-weight: 800;
-}
-
-.paper-title {
-    padding: var(--space-xs) 0;
-}
-
-section {
-    margin: var(--space-xl) 0;
-    text-align: justify;
-    clear: both;
-}
-
-.col-5 { width: 20%; float: left; }
-.col-4 { width: 25%; float: left; }
-.col-3 { width: 33.333%; float: left; }
-.col-2 { width: 50%; float: left; }
-.col-1 { width: 100%; float: left; }
-
-.author-row, .affil-row {
-    font-size: var(--text-2xl);
-}
-
-.author-row-new {
-    text-align: center;
-}
-
-.author-row-new a {
-    display: inline-block;
-    font-size: var(--text-xl);
-    padding: var(--space-xs);
-}
-
-.author-row-new sup {
-    color: #313436;
-    font-size: var(--text-xs);
-}
-
-.affiliations-new {
-    font-size: var(--text-lg);
-    text-align: center;
-    width: 80%;
-    margin: 0 auto var(--space-lg);
-}
-
-.row {
-    margin: var(--space-md) 0;
-}
-
-.authors {
-    font-size: var(--text-2xl);
-}
-
-.affiliatons {
-    font-size: var(--text-lg);
-}
-
-.equal-contrib {
-    font-size: var(--text-sm);
-}
-
-.affil-row {
-    margin-top: var(--space-lg);
-}
-
-.teaser {
-    max-width: 100%;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.screenshot {
-    width: min(16rem, 80vw);
-    border: 1px solid #ddd;
-}
-
-.screenshot-el {
-    margin-bottom: var(--space-md);
-}
-
-hr {
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ddd;
-    margin: 0;
-}
-
-.material-icons {
-    vertical-align: -0.375rem;
-}
-
-p {
-    line-height: 1.25em;
-}
-
-.caption {
-    font-size: var(--text-base);
-    color: #666;
-    margin-top: var(--space-xs);
-    margin-bottom: var(--space-sm);
-    text-align: left;
-}
-
-video {
-    display: block;
-    margin: auto;
-    max-width: 100%;
-}
-
-figure {
-    display: block;
-    margin: auto;
-    margin-top: var(--space-sm);
-    margin-bottom: var(--space-sm);
-}
-
-#bibtex pre {
-    font-size: var(--text-sm);
-    background-color: #eee;
-    padding: var(--space-md);
-    overflow-x: auto;
-}
-
-.green {
-    color: #0E710E;
-    font-weight: bold;
-}
-
-.orange {
-    color: #d35400;
-    font-weight: bold;
-}
-
-.flex-row {
-    display: flex;
-    flex-flow: row wrap;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.coming-soon {
-    position: absolute;
-    top: -1rem;
-    right: -1rem;
-}
-
-.paper-btn:hover {
-    color: #FF8563;
-    transform: translateY(-0.125rem);
-}
-
-.paper-btn-parent {
-    display: flex;
-    justify-content: center;
-    margin: var(--space-md) 0;
-    gap: var(--space-lg);
-    font-size: var(--text-xl);
-    flex-wrap: wrap;
-}
-
-.github-btn:hover {
-    color: #FF8563;
-    transform: translateY(-0.125rem);
-}
-
-.container {
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-}
-
-.venue {
-    font-size: var(--text-xl);
-}
-
-.topnav {
-    background-color: #EEEEEE;
-    overflow: hidden;
-}
-
-.topnav div {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-}
-
-.topnav a {
-    display: inline-block;
-    color: black;
-    text-align: center;
-    vertical-align: middle;
-    padding: var(--space-md);
-    text-decoration: none;
-    font-size: var(--text-lg);
-}
-
-.topnav img {
-    padding: var(--space-xs) 0;
-    width: 100%;
-    margin: 0.2em 0 0.3em 0;
-    vertical-align: middle;
-}
-
-pre {
-    font-size: 0.9em;
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: 0.1875rem;
-    background-color: rgb(235, 235, 235);
-    overflow-x: auto;
-}
-
-.download-thumb {
-    display: flex;
-}
-
-@media only screen and (max-width: 38.75rem) {
-    .download-thumb {
-        display: none;
+    .btn-primary {
+      background: white;
+      color: #0b1e2e;
+      box-shadow: 0 8px 16px #00000030;
     }
-}
-
-.paper-stuff {
-    width: 50%;
-    font-size: var(--text-xl);
-}
-
-@media only screen and (max-width: 38.75rem) {
-    .paper-stuff {
-        width: 100%;
+    .btn-primary:hover { background: #e0f0ff; transform: translateY(-3px); }
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 1px solid white;
     }
-}
+    .btn-outline:hover { background: #ffffff30; transform: translateY(-3px); }
 
-* {
-    box-sizing: border-box;
-}
-
-.column {
-    text-align: center;
-    float: left;
-    width: 16.666%;
-    padding: var(--space-xs);
-}
-
-.column3 {
-    text-align: center;
-    float: left;
-    width: 33.333%;
-    padding: var(--space-xs);
-}
-
-.border-right {
-    border-right: 1px solid black;
-}
-
-.border-bottom {
-    border-bottom: 1px solid black;
-}
-
-.row::after {
-    content: "";
-    clear: both;
-    display: table;
-}
-
-.image-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.25fr;
-    gap: var(--space-sm);
-    width: 100%;
-}
-
-.image-grid img {
-    width: 100%;
-}
-
-.image-grid img:first-child {
-    object-fit: contain;
-}
-
-@media screen and (max-width: 31.25rem) {
-    .column {
-        width: 100%;
+    /* section styling */
+    section { margin: 4rem 0; }
+    h2 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 2rem;
+      color: #0b2c42;
+      border-left: 8px solid #2b7fc2;
+      padding-left: 1.5rem;
     }
-    .column3 {
-        width: 100%;
+    h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem;
+      color: #17354d;
     }
-}
-
-.figure img {
-    width: 100%;
-}
-
-.image-grid-three {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-sm);
-    width: 90%;
-    justify-items: center;
-    margin: 0 auto;
-}
-
-.image-grid-three img {
-    width: 100%;
-}
-
-.image-grid-tab {
-    text-align: center;
-    justify-content: center;
-    display: grid;
-    place-items: center;
-    grid-template-columns: 1fr 1.22fr;
-    gap: var(--space-sm);
-    width: 90%;
-    justify-items: center;
-    margin: 0 auto;
-}
-
-.image-grid-tab img {
-    width: 100%;
-}
-
-blockquote {
-    background-color: rgba(40, 40, 40, 0.2);
-    padding: 0;
-    margin: var(--space-xs) 0;
-    border-radius: var(--space-sm);
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--text-xl);
-}
-.tldr-blockquote {
-    font-size: calc(var(--text-xl) * 1.15);
-}
-
-.video-carousel {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    margin: var(--space-md) auto var(--space-lg);
-    overflow: hidden;
-}
-
-.video-carousel-track {
-    display: flex;
-    transition: transform 0.4s ease-in-out;
-    width: 100%;
-}
-
-.video-carousel-track > video {
-    width: 100%;
-    flex-shrink: 0;
-}
-
-.carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.4);
-    border: none;
-    color: white;
-    font-size: var(--text-xl);
-    padding: var(--space-sm) var(--space-md);
-    cursor: pointer;
-    z-index: 10;
-}
-
-.carousel-btn.left { left: var(--space-sm); }
-.carousel-btn.right { right: var(--space-sm); }
-
-.carousel-desc {
-    margin: var(--space-xs) 0 var(--space-sm) 0;
-}
-
-.method-compare {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.method-compare img {
-    height: var(--img-height-md);
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-}
-
-.emphasis-text {
-    text-align: center;
-    font-weight: 600;
-    font-size: var(--text-lg);
-    margin: var(--space-xs) 0 0 0;
-}
-
-.method-figure img {
-    height: var(--img-height-md);
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-}
-
-.method-figure {
-    text-align: center;
-}
-
-.equation-compare {
-    margin: var(--space-xs) auto 0;
-}
-
-.side-by-side {
-    display: flex;
-    gap: var(--space-xl);
-    justify-content: center;
-    align-items: stretch;
-    flex-wrap: wrap;
-}
-
-.side-by-side figure {
-    flex: 1 1 0;
-    margin: 0;
-    max-width: min(30rem, 100%);
-    min-width: min(18rem, 100%);
-    display: flex;
-    flex-direction: column;
-}
-
-.side-by-side img {
-    width: 100%;
-    height: var(--img-height-lg);
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.side-by-side.equation-compare {
-    align-items: center;
-    gap: calc(var(--space-md) * 4);
-    flex-wrap: nowrap;
-}
-
-.side-by-side.equation-compare figure {
-    flex: 1 1 auto;
-    max-width: 35%;
-    min-width: 0;
-}
-
-.side-by-side.equation-compare img {
-    height: auto;
-    width: 100%;
-    max-width: 100%;
-    object-fit: contain;
-}
-
-@media only screen and (max-width: 38.75rem) {
-    .side-by-side.equation-compare {
-        flex-wrap: wrap;
-        gap: var(--space-sm);
+    .card {
+      background: white;
+      border-radius: 2.5rem;
+      padding: 2rem;
+      box-shadow: 0 12px 30px rgba(0, 30, 50, 0.08);
+      border: 1px solid #e3eef9;
+      margin-bottom: 2rem;
     }
-    .side-by-side.equation-compare figure {
-        flex: 1 1 100%;
-        max-width: 80%;
-        margin: 0 auto;
+    figure {
+      margin: 2rem 0;
+      text-align: center;
     }
-}
-
-.side-by-side.pnp-compare {
-    gap: var(--space-sm);
-}
-
-.side-by-side.pnp-compare img {
-    height: min(5rem, 20vw);
-    max-height: none;
-}
-
-.wrap-figure {
-    display: flex;
-    gap: var(--space-lg);
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-
-.wrap-figure-text {
-    flex: 1 1 55%;
-    min-width: min(17.5rem, 100%);
-}
-
-.wrap-figure-media {
-    flex: 1 1 45%;
-    min-width: min(17.5rem, 100%);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    align-items: stretch;
-}
-
-.wrap-figure-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    border: 1px solid #9b9b9b;
-    border-radius: var(--space-sm);
-    flex-wrap: nowrap;
-}
-
-.wrap-figure-caption {
-    font-size: var(--text-base);
-    color: #000000;
-    white-space: normal;
-    order: 1;
-    text-align: left;
-    flex: 0 0 60%;
-    max-width: 60%;
-}
-
-.wrap-figure-media figure {
-    margin: 0;
-    order: 2;
-    flex: 0 0 40%;
-    max-width: 40%;
-}
-
-.wrap-figure-media img {
-    height: auto;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    object-fit: contain;
-}
-
-@media only screen and (max-width: 48rem) {
-    .wrap-figure-item {
-        flex-wrap: wrap;
+    figure img {
+      max-width: 100%;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 20px #00000020;
     }
-    .wrap-figure-caption {
-        flex: 1 1 100%;
-        max-width: 100%;
-        order: 2;
+    figcaption {
+      font-size: 0.95rem;
+      color: #4a5f73;
+      margin-top: 0.5rem;
+      text-align: center;
     }
-    .wrap-figure-media figure {
-        flex: 1 1 100%;
-        max-width: 100%;
-        order: 1;
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
     }
-}
-
-.video-grid-three {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-sm);
-    width: 100%;
-    margin: var(--space-sm) auto 0;
-    align-items: start;
-}
-
-.video-grid-three video {
-    width: 100%;
-    height: auto;
-}
-
-.video-grid-two {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-sm);
-    width: 66.66%;
-    margin: var(--space-sm) auto 0;
-    align-items: start;
-}
-
-.video-grid-two video {
-    width: 100%;
-    height: auto;
-}
-
-@media only screen and (max-width: 48rem) {
-    .video-grid-three {
-        grid-template-columns: repeat(2, 1fr);
+    .table-responsive {
+      overflow-x: auto;
+      background: white;
+      border-radius: 1.8rem;
+      padding: 0.2rem;
+      box-shadow: 0 8px 20px #00000010;
     }
-    .video-grid-two {
-        width: 100%;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
     }
-}
-
-@media only screen and (max-width: 38.75rem) {
-    .video-grid-three {
-        grid-template-columns: 1fr;
+    th {
+      background: #0b2c42;
+      color: white;
+      padding: 1rem 0.8rem;
+      font-weight: 600;
     }
-    .video-grid-two {
-        width: 100%;
-        grid-template-columns: 1fr;
+    td {
+      padding: 0.9rem 0.8rem;
+      border-bottom: 1px solid #d2e2f0;
     }
-    .side-by-side {
-        gap: var(--space-md);
+    tr:last-child td { border-bottom: none; }
+    .highlight {
+      background: #d4e8ff;
+      font-weight: 600;
+      border-left: 6px solid #2b7fc2;
     }
-    .side-by-side.equation-compare img {
-        height: min(6.25rem, 25vw);
+    .bibtex {
+      background: #1e2f3f;
+      color: #d4e9ff;
+      padding: 1.8rem;
+      border-radius: 2rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
     }
-    .side-by-side.pnp-compare {
-        gap: var(--space-sm);
+    footer {
+      text-align: center;
+      color: #4f6f8a;
+      margin: 4rem 0 2rem;
     }
-    .side-by-side.pnp-compare img {
-        height: min(6.5rem, 30vw);
-    }
-    blockquote {
-        font-size: var(--text-base);
-    }
-}
-
-.ablation-figure {
-    margin: 0 auto;
-}
-
-.ablation-text {
-    margin: 0;
-}
-
-/* Motion Comparison Carousel Styles */
-.motion-compare-slide {
-    width: 100%;
-    flex: 0 0 100%;
-    box-sizing: border-box;
-}
-
-.motion-compare-grid-4x3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
-    gap: var(--space-sm);
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.motion-video-item {
-    text-align: center;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.motion-video-item video {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-.motion-label {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    margin: 0 0 var(--space-xs);
-    color: #333;
-}
-
-.ours-row-wrapper {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-sm);
-    background: linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.15) 100%);
-    border-radius: var(--space-md);
-    padding: var(--space-sm);
-    border: 2px solid rgba(79, 172, 254, 0.4);
-}
-
-.ours-row-wrapper .row-label {
-    color: #1a73e8;
-}
-
-.ours-row-wrapper .motion-label {
-    color: #1a73e8;
-}
-
-.base-row-wrapper,
-.nfe-row-wrapper,
-.flowmo-row-wrapper,
-.bon-row-wrapper {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-sm);
-    border-radius: var(--space-md);
-    padding: var(--space-sm);
-    border: 2px solid transparent;
-}
-
-.base-row-wrapper {
-    background: transparent;
-    border-color: rgba(255, 193, 7, 0.5);
-}
-
-.base-row-wrapper .row-label {
-    color: #d68400;
-}
-
-.nfe-row-wrapper {
-    background: transparent;
-    border-color: rgba(172, 61, 61, 0.5);
-}
-
-.nfe-row-wrapper .row-label {
-    color: #b13d3d;
-}
-
-.flowmo-row-wrapper {
-    background: transparent;
-    border-color: rgba(156, 39, 176, 0.5);
-}
-
-.flowmo-row-wrapper .row-label {
-    color: #8b1fa9;
-}
-
-.bon-row-wrapper {
-    background: transparent;
-    border-color: rgba(96, 125, 139, 0.5);
-}
-
-.bon-row-wrapper .row-label {
-    color: #455a64;
-}
-
-.row-label {
-    grid-column: 1 / -1;
-    text-align: center;
-    font-weight: 700;
-    margin: 0 0 var(--space-xs);
-    font-size: var(--text-xl);
-}
-
-@media only screen and (max-width: 48rem) {
-    .motion-compare-grid-4x3 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .ours-row-wrapper,
-    .base-row-wrapper,
-    .nfe-row-wrapper,
-    .flowmo-row-wrapper,
-    .bon-row-wrapper {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media only screen and (max-width: 38.75rem) {
-    .motion-compare-grid-4x3 {
-        grid-template-columns: 1fr;
-    }
-    .ours-row-wrapper,
-    .base-row-wrapper,
-    .nfe-row-wrapper,
-    .flowmo-row-wrapper,
-    .bon-row-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Robot Comparison Grid Styles */
-.robot-compare-grid-3x3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
-    gap: var(--space-sm);
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.robot-video-item {
-    text-align: center;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.robot-video-item video {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-.video-prompt {
-    font-size: var(--text-base);
-    color: #666;
-    margin: var(--space-xs) 0 var(--space-sm);
-    font-style: italic;
-}
-
-.prompt-grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-xs);
-    width: 100%;
-    margin: var(--space-xs) auto 0;
-    text-align: center;
-}
-
-@media only screen and (max-width: 48rem) {
-    .robot-compare-grid-3x3 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .prompt-grid-3 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media only screen and (max-width: 38.75rem) {
-    .robot-compare-grid-3x3 {
-        grid-template-columns: 1fr;
-    }
-    .prompt-grid-3 {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Video Zoom Lens Styling */
-.video-zoom-lens {
-    position: fixed;
-    z-index: 10000;
-    background: transparent;
-    border-radius: 12px;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8),
-                0 0 0 3px rgba(0, 0, 0, 0.2),
-                0 8px 32px rgba(0, 0, 0, 0.35);
-    padding: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    border: none;
-    overflow: hidden;
-}
-
-.video-zoom-lens.visible {
-    opacity: 1;
-}
-
-.video-zoom-lens canvas {
-    display: block;
-    border-radius: 12px;
-    width: 150;
-    height: 150;
-}
-
-.hover-instruction {
-    text-align: center;
-    margin: var(--space-sm) 0;
-    padding: var(--space-sm);
-    background: #f8f9fa;
-    border-radius: var(--space-sm);
-    color: #555;
-    font-size: var(--text-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xs);
-}
-
-.hover-instruction i {
-    color: #1a73e8;
-    font-size: var(--text-base);
-}
-
-/* Mobile-first responsive adjustments */
-@media only screen and (max-width: 38.75rem) {
-    :root {
-        --scale: 0.9;
-    }
-    
-    h1 {
-        font-size: var(--text-3xl);
-    }
-    
-    .author-row-new a {
-        font-size: var(--text-base);
-        padding: var(--space-xs);
-    }
-    
-    .affiliations {
-        font-size: var(--text-base);
-    }
-    
-    .paper-btn-parent {
-        gap: var(--space-md);
-        font-size: var(--text-base);
-    }
-}
-</style>
-
-<script type="text/javascript" src="../js/hidebib.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,600,400italic,600italic,300,300italic' rel='stylesheet' type='text/css'>
-    <head>
-        <title>ROVA: Robust Video Alignment for Real-World Reasoning</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta property="og:description" content="ROVA: Robust Video Alignment for Real-World Reasoning"/>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link href="https://fonts.googleapis.com/css2?family=FontAwesome" rel="stylesheet">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:creator" content="@jaehong.yoon">
-        <meta name="twitter:title" content="ROVA: Robust Video Alignment">
-    </head>
-
+    hr { border: none; height: 1px; background: #bdd6ec; margin: 2rem 0; }
+  </style>
+</head>
 <body>
-<div class="container">
-    <div class="paper-title">
-    <h1>
-        Are Video Reasoning Models Ready to Go Outside?
-    </h1>
-    <h2 style="text-align:center; font-size:var(--text-2xl); margin-top:-0.5rem;">ROVA: Robust Video Alignment under Real-World Perturbations</h2>
+  <div class="hero">
+    <div class="container">
+      <h1>Are Video Reasoning Models<br>Ready to Go Outside?</h1>
+      <div class="subtitle">ROVA: Robust Video Alignment under Real‑World Perturbations</div>
+      <div class="authors">
+        <span><a href="#">Yangfan He<sup>1,*</sup></a></span>
+        <span><a href="#">Changgyu Boo<sup>2,*</sup></a></span>
+        <span><a href="#">Jaehong Yoon<sup>3,†</sup></a></span>
+      </div>
+      <div class="equal"><sup>*</sup>Equal contribution (first & second authors) &nbsp; <sup>†</sup>Corresponding author</div>
+      <div>
+        <span class="venue-badge"><i class="fa-regular fa-file-lines"></i> arXiv 2026</span>
+        <span class="venue-badge"><i class="fa-regular fa-calendar"></i> ECCV 2026 under review</span>
+      </div>
+      <div class="button-group">
+        <a href="#" class="btn btn-primary"><i class="fa-regular fa-file-pdf"></i> Paper (arXiv)</a>
+        <a href="#" class="btn btn-outline"><i class="fa-brands fa-github"></i> Code & Dataset</a>
+        <a href="#" class="btn btn-outline"><i class="fa-regular fa-compass"></i> PVRBench</a>
+      </div>
     </div>
+  </div>
 
-    <div id="authors">
-        <center>
-            <div class="author-row-new">
-                <a href="https://yangfanhe.github.io">Yangfan He<sup>1,*</sup></a>,
-                <a href="https://changgyuboo.github.io">Changgyu Boo<sup>2,*</sup></a>,
-                <a href="https://jaehong31.github.io">Jaehong Yoon<sup>3,&dagger;</sup></a>
-            </div>
-        </center>
-        <center>
-        <div class="affiliations">
-            <span><sup>1</sup>NTU Singapore</span>&nbsp;&nbsp;&nbsp;
-            <span><sup>2</sup>Korea University</span>&nbsp;&nbsp;&nbsp;
-            <span><sup>3</sup>NTU Singapore</span><br>
-        </div>
-
-        <p class="equal-contrib"><span><sup>*</sup>Equal Contribution,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<sup>&dagger;</sup>Corresponding Author</span></p>
-        
-        <div class="affil-row">
-            <div class="venue text-center"><b>arXiv 2026</b></div>
-        </div>
-        </center>
-
-        <div style="clear: both">
-            <div class="paper-btn-parent">
-                <a class="paper-btn" href="https://arxiv.org/abs/2601.18577"> <!-- placeholder link -->
-                    <span class="fas fa-file-alt"></span> 
-                    Paper
-                </a>   
-                <a class="github-btn" href="https://github.com/robust-video-reason/robust-video-reason">
-                    <span class="fab fa-github"></span> 
-                    Code
-                </a>           
-        </div>
-        </div>
-
-        <!-- Teaser video grid: three examples of ROVA under perturbations -->
-        <div class="video-grid-three">
-            <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                <source src="assets/rova/teaser_occlusion.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                <source src="assets/rova/teaser_weather.mp4" type="video/mp4">
-            </video>
-            <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                <source src="assets/rova/teaser_motion.mp4" type="video/mp4">
-            </video>
-        </div>
-        <p class="caption" style="text-align:center;">ROVA enables robust reasoning under occlusion, adverse weather, and camera shake — failure modes for standard VLMs (example frames).</p>
-
-        <blockquote class="tldr-blockquote">    
-            <p>
-                <b>[TL;DR]</b> We propose <b>ROVA</b>, a training framework that uses structured spatio‑temporal corruptions, self‑reflective difficulty‑aware sampling, and dual‑branch alignment to make video reasoning models robust to real‑world disturbances (weather, occlusion, camera motion). We also introduce <b>PVRBench</b>, a benchmark with 12 perturbation types across 27 scenes. ROVA improves accuracy by up to 24% and reasoning quality by over 9% on perturbed videos, while also boosting clean performance.
-            </p>
-        </blockquote>
-    </div>
-    <br>
-
+  <main class="container">
+    <!-- Abstract -->
     <section>
-        <h2>Abstract</h2>
-        <hr>
-        <p>
-            In real-world deployment, vision-language models often encounter disturbances such as weather, occlusion, and camera motion. Under such conditions, their understanding and reasoning degrade substantially, revealing a gap between clean, controlled evaluation settings and real-world robustness. To address this limitation, we propose ROVA, a novel training framework that improves robustness by modeling a robustness-aware consistency reward under spatio-temporal corruptions. ROVA introduces a difficulty-aware online training strategy that prioritizes informative samples based on the model's evolving capability. Specifically, it continuously re-estimates sample difficulty via self-reflective evaluation, enabling adaptive training with a robustness-aware consistency reward. We also introduce PVRBench, a new benchmark that injects real-world perturbations into embodied video datasets to assess both accuracy and reasoning quality under realistic disturbances. We evaluate ROVA and baselines on PVRBench, UrbanVideo, and VisBench, where open-source and proprietary models suffer up to 35% and 28% drops in accuracy and reasoning under realistic perturbations. ROVA effectively mitigates performance degradation, boosting relative accuracy by at least 24% and reasoning by over 9% compared with baseline models (QWen2.5/3-VL, InternVL2.5, Embodied-R). These gains transfer to clean standard benchmarks, yielding consistent improvements.
-        </p>
+      <h2>Abstract</h2>
+      <div class="card" style="font-size: 1.2rem;">
+        <p>In real‑world deployment, vision‑language models often encounter disturbances such as weather, occlusion, and camera motion. Under such conditions, their understanding and reasoning degrade substantially—up to <strong>35% accuracy drop</strong> and <strong>28% reasoning quality drop</strong> in our evaluation. We propose <strong>ROVA</strong>, a training framework that improves robustness via a robustness‑aware consistency reward under spatio‑temporal corruptions. ROVA introduces a difficulty‑aware online training strategy that prioritizes informative samples based on the model’s evolving capability. We also introduce <strong>PVRBench</strong>, a new benchmark with 12 realistic perturbation types across 27 scene categories. ROVA boosts relative accuracy by at least <strong>24%</strong> and reasoning by over <strong>9%</strong> compared to baselines, while also improving performance on clean data.</p>
+      </div>
     </section>
 
+    <!-- Figure 1: Failure cases -->
     <section>
-        <h2>ROVA: Robust Video Alignment</h2>
-        <hr>
-        <div class="method-figure">
-            <img src="assets/rova/fig2_overview.png" alt="ROVA overview" style="width:100%; max-width:900px;">
-            <p class="caption"><b>Figure 2:</b> ROVA consists of (1) structured spatio-temporal corruption, (2) self-reflective difficulty-aware training, and (3) dual-branch alignment with GRPO.</p>
-        </div>
-
-        <h3>1. Structured Spatio-Temporal Corruption</h3>
-        <p>We apply realistic perturbations (weather, lighting, occlusion, camera motion) with spatial grounding and temporal coherence. Each video is paired with its corrupted counterpart for dual-branch alignment.</p>
-
-        <h3>2. Self‑Reflective Difficulty‑Aware Training</h3>
-        <p>The model evaluates its own confidence and difficulty on corrupted samples. Easy samples are discarded, hard ones stored in a memory buffer for later replay, and informative ones used for training. This forms an adaptive curriculum that evolves with the model.</p>
-
-        <h3>3. Dual‑Branch Alignment with GRPO</h3>
-        <p>We enforce output consistency between clean and perturbed branches using a reward composed of format, accuracy, and alignment rewards (reasoning + answer similarity). Optimization is done via Group Relative Policy Optimization (GRPO).</p>
+      <h2>Motivation: VLMs Fail Under Realistic Perturbations</h2>
+      <figure>
+        <img src="assets/rova/fig1_failure_cases.pdf" alt="Figure 1: Failure cases of baseline model under occlusion and fog">
+        <figcaption><strong>Figure 1.</strong> Failure cases of Qwen2.5‑VL under occlusion (left) and fog (right). The model incorrectly predicts "Turn Left" or "Turn Right" instead of the ground‑truth "Go Ahead". These examples motivate robustness‑aware training.</figcaption>
+      </figure>
     </section>
 
+    <!-- ROVA overview: Figure 2 -->
     <section>
-        <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
-        <hr>
-        <p>PVRBench systematically injects 12 realistic perturbation types (lighting: dusk, night, overexposure, shadow; camera: translation, zoom, rotation; occlusion: static, dynamic; weather: fog, rain, snow) into 9K videos from UrbanVideo and VSI-Bench, creating 51K QA pairs. All perturbations are spatially aware and temporally coherent.</p>
-        <div class="side-by-side">
-            <figure>
-                <img src="assets/rova/table1_benchmark_comparison.png" alt="Table 1: Benchmark comparison">
-                <figcaption class="caption"><b>Table 1:</b> Comparison with existing benchmarks. PVRBench is the only one with synthetic, spatial, temporal perturbations.</figcaption>
-            </figure>
-            <figure>
-                <img src="assets/rova/fig3_perturbation_types.png" alt="Figure 3: Perturbation types">
-                <figcaption class="caption"><b>Figure 3:</b> Visualization of the four perturbation categories.</figcaption>
-            </figure>
+      <h2>ROVA: Robust Video Alignment</h2>
+      <figure>
+        <img src="assets/rova/fig2_overview.pdf" alt="Figure 2: Overview of ROVA framework">
+        <figcaption><strong>Figure 2.</strong> ROVA consists of (1) structured spatio‑temporal corruption, (2) self‑reflective difficulty‑aware training, and (3) dual‑branch alignment with GRPO.</figcaption>
+      </figure>
+      <div class="grid-2">
+        <div class="card">
+          <i class="fa-regular fa-cloud-rain" style="font-size:2rem; color:#1f6fb0;"></i>
+          <h3>① Structured Corruption</h3>
+          <p>We inject temporally coherent, spatially grounded perturbations (weather, lighting, camera motion, occlusion) via learnable masks.</p>
         </div>
+        <div class="card">
+          <i class="fa-regular fa-brain" style="font-size:2rem;"></i>
+          <h3>② Self‑Reflective Difficulty</h3>
+          <p>The model evaluates its own predictions on corrupted samples, discarding easy ones, storing hard ones in a memory buffer, and training on informative samples.</p>
+        </div>
+        <div class="card">
+          <i class="fa-regular fa-code-branch" style="font-size:2rem;"></i>
+          <h3>③ Dual‑Branch Alignment</h3>
+          <p>Clean and perturbed branches are aligned via GRPO using format, accuracy, and reasoning‑similarity rewards.</p>
+        </div>
+      </div>
     </section>
 
+    <!-- PVRBench: Table 1 & Figure 3 -->
     <section>
-        <h2>Main Results</h2>
-        <hr>
-        <h3>Performance on PVRBench</h3>
-        <div style="overflow-x: auto;">
-            <img src="assets/rova/table2_main_results.png" alt="Table 2: Main results" style="width:100%;">
-        </div>
-        <p class="caption"><b>Table 2:</b> ROVA consistently outperforms proprietary and open-source models across all perturbation types and reasoning quality metrics (higher is better, except Fragility ↓). Gains are especially pronounced under weather and occlusion.</p>
-
-        <h3>Training Efficiency</h3>
-        <div class="side-by-side" style="gap:var(--space-md);">
-            <figure>
-                <img src="assets/rova/table3_efficiency.png" alt="Table 3: Efficiency">
-                <figcaption class="caption"><b>Table 3:</b> ROVA achieves higher accuracy with fewer GPU hours and less data than Video-R1.</figcaption>
-            </figure>
-            <figure>
-                <img src="assets/rova/fig4_curriculum_analysis.png" alt="Figure 4: Curriculum analysis">
-                <figcaption class="caption"><b>Figure 4:</b> Self-reflective evaluation dynamically discards easy samples and reclassifies difficult ones as training progresses.</figcaption>
-            </figure>
-        </div>
-
-        <h3>Ablation Studies</h3>
-        <div class="side-by-side" style="gap:var(--space-md);">
-            <figure>
-                <img src="assets/rova/fig5a_ablation_components.png" alt="Figure 5a: Component ablation">
-                <figcaption class="caption"><b>(a)</b> Impact of each ROVA component.</figcaption>
-            </figure>
-            <figure>
-                <img src="assets/rova/fig5b_mask_ablation.png" alt="Figure 5b: Mask styles">
-                <figcaption class="caption"><b>(b)</b> Structured masks generalize better than random masking.</figcaption>
-            </figure>
-        </div>
+      <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
+      <figure>
+        <img src="assets/rova/table1_benchmark_comparison.png" alt="Table 1: Comparison with existing benchmarks">
+        <figcaption><strong>Table 1.</strong> PVRBench is the only benchmark with synthetic, spatial, and temporal perturbations across 27 scene categories.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/rova/fig3_perturbation_types.jpg" alt="Figure 3: Four perturbation categories">
+        <figcaption><strong>Figure 3.</strong> Examples of lighting, camera motion, occlusion, and weather perturbations in PVRBench.</figcaption>
+      </figure>
     </section>
 
+    <!-- Main results: Table 2 -->
     <section>
-        <h2>Qualitative Analysis</h2>
-        <hr>
-        <p>ROVA enables models to maintain correct reasoning even under severe perturbations. Below, we show examples of ROVA‑trained Qwen2.5‑VL‑7B performing obstacle avoidance and target identification under night/low‑light and heavy rain.</p>
+      <h2>Main Results on PVRBench</h2>
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Model</th><th>Size</th><th>Light.</th><th>Occ.</th><th>Shake</th><th>Weather</th><th>Avg. Pert.</th><th>Clean</th><th>Reasoning↑</th></tr></thead>
+          <tbody>
+            <tr><td>GPT-4o</td><td>-</td><td>0.47</td><td>0.50</td><td>0.52</td><td>0.51</td><td>0.50</td><td>0.59</td><td>3.82</td></tr>
+            <tr><td>Gemini-3-Pro</td><td>-</td><td>0.57</td><td>0.52</td><td>0.54</td><td>0.55</td><td>0.55</td><td>0.61</td><td>3.91</td></tr>
+            <tr><td>Video-R1 72B</td><td>72B</td><td>0.51</td><td>0.45</td><td>0.49</td><td>0.49</td><td>0.49</td><td>0.58</td><td>3.68</td></tr>
+            <tr><td>Embodied-R 7B</td><td>7B</td><td>0.45</td><td>0.38</td><td>0.42</td><td>0.43</td><td>0.42</td><td>0.54</td><td>3.45</td></tr>
+            <tr class="highlight"><td><b>ROVA (ours) 7B</b></td><td><b>7B</b></td><td><b>0.52</b></td><td><b>0.46</b></td><td><b>0.49</b></td><td><b>0.51</b></td><td><b>0.50</b></td><td><b>0.55</b></td><td><b>3.58</b></td></tr>
+            <tr><td>Qwen2.5-VL 7B</td><td>7B</td><td>0.35</td><td>0.28</td><td>0.34</td><td>0.34</td><td>0.33</td><td>0.51</td><td>3.41</td></tr>
+            <tr class="highlight"><td>+ ROVA 7B</td><td>7B</td><td>0.48</td><td>0.43</td><td>0.47</td><td>0.49</td><td>0.47</td><td>0.53</td><td>3.52</td></tr>
+            <tr class="highlight"><td><b>ROVA (ours) 72B</b></td><td><b>72B</b></td><td><b>0.57</b></td><td><b>0.53</b></td><td><b>0.56</b></td><td><b>0.56</b></td><td><b>0.56</b></td><td><b>0.59</b></td><td><b>3.72</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption style="margin-top:0.5rem;"><strong>Table 2.</strong> Accuracy under four perturbation types and reasoning quality (0–5 scale). ROVA consistently outperforms baselines.</figcaption>
+    </section>
+
+    <!-- Training efficiency: Table 3 -->
+    <section>
+      <h2>Efficiency & Data Economy</h2>
+      <div class="table-responsive" style="max-width:700px; margin:0 auto;">
+        <table>
+          <thead><tr><th>Method</th><th>Data</th><th>GPUs</th><th>GPU‑h</th><th>Avg. Acc.</th></tr></thead>
+          <tbody>
+            <tr><td>Video-R1</td><td>425K</td><td>8×A100</td><td>339.2</td><td>0.49</td></tr>
+            <tr><td>Naïve Dual</td><td>32.5K</td><td>4×A100</td><td>142.8</td><td>0.48</td></tr>
+            <tr class="highlight"><td>ROVA</td><td>32.5K</td><td>4×A100</td><td>134.4</td><td>0.53</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption><strong>Table 3.</strong> ROVA achieves higher accuracy with 60% fewer GPU hours and 8× less data than Video‑R1.</figcaption>
+    </section>
+
+    <!-- Ablation studies: Figure 5 (a,b)  [Note: PDF has Figure 4 and 5, we combine] -->
+    <section>
+      <h2>Ablation and Analysis</h2>
+      <div class="grid-2">
         <figure>
-            <img src="assets/rova/fig6_qualitative.png" alt="Figure 6: Qualitative examples" style="width:100%;">
-            <figcaption class="caption"><b>Figure 6:</b> ROVA successfully reasons about scene layout and task goals despite glare, rain, and occlusion.</figcaption>
+          <img src="assets/rova/fig5a_ablation_components.pdf" alt="Figure 5a: Component ablation">
+          <figcaption><strong>Figure 5a.</strong> Contribution of each ROVA component. Reasoning reward gives the largest gain.</figcaption>
         </figure>
-
-        <!-- Video comparison carousel: ROVA vs baselines under perturbations -->
-        <div class="hover-instruction">
-            <i class="fas fa-search-plus"></i>
-            <span>Hover over videos to zoom in and compare ROVA with baselines under different corruptions</span>
-        </div>
-
-        <div class="video-carousel" data-carousel="rova_compare">
-            <button class="carousel-btn left" onclick="moveCarousel('rova_compare', -1)">&#10094;</button>
-            <button class="carousel-btn right" onclick="moveCarousel('rova_compare', 1)">&#10095;</button>
-            <div class="video-carousel-track" id="carousel-rova_compare">
-                <!-- Slide 1: Occlusion -->
-                <div class="motion-compare-slide">
-                    <h4 style="text-align:center;">Occlusion</h4>
-                    <div class="robot-compare-grid-3x3">
-                        <div class="ours-row-wrapper">
-                            <p class="row-label">ROVA (Ours)</p>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_occ_ours_1.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_occ_ours_2.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_occ_ours_3.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                        <div class="base-row-wrapper">
-                            <p class="row-label">Baseline (Qwen2.5-VL)</p>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_occ_base_1.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_occ_base_2.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_occ_base_3.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Slide 2: Weather (Rain/Fog) -->
-                <div class="motion-compare-slide">
-                    <h4 style="text-align:center;">Adverse Weather</h4>
-                    <div class="robot-compare-grid-3x3">
-                        <div class="ours-row-wrapper">
-                            <p class="row-label">ROVA (Ours)</p>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_weather_ours_1.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_weather_ours_2.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_weather_ours_3.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                        <div class="base-row-wrapper">
-                            <p class="row-label">Baseline (Qwen2.5-VL)</p>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_weather_base_1.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_weather_base_2.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="robot-video-item">
-                                <video controls playsinline loop muted autoplay data-autoplay-inline="true" data-concurrent="true">
-                                    <source src="assets/rova/compare_weather_base_3.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <figure>
+          <img src="assets/rova/fig5b_mask_ablation.pdf" alt="Figure 5b: Mask style generalization">
+          <figcaption><strong>Figure 5b.</strong> Structured masks generalize to unseen perturbations (red bars), outperforming random masking.</figcaption>
+        </figure>
+      </div>
+      <figure>
+        <img src="assets/rova/fig5_curriculum_analysis.pdf" alt="Figure 5c: Self-reflective evaluation dynamics">
+        <figcaption><strong>Figure 5c.</strong> Self‑reflective evaluation: easy samples are increasingly discarded, difficult samples re‑evaluated and re‑classified as training progresses.</figcaption>
+      </figure>
     </section>
 
+  
+
+    <!-- Cross‑benchmark generalization (Figure 19 mentioned in text) -->
     <section>
-        <h2>Cross‑Benchmark Generalization</h2>
-        <hr>
-        <div class="side-by-side">
-            <figure>
-                <img src="assets/rova/fig19_cross_benchmark.png" alt="Cross-benchmark results">
-                <figcaption class="caption"><b>Figure 19:</b> ROVA improves accuracy on VisBench and UrbanVideo under various perturbations by +14.6% and +12.9% on average.</figcaption>
-            </figure>
-        </div>
+      <h2>Generalization to Other Benchmarks</h2>
+      <figure>
+        <img src="assets/rova/fig19_cross_benchmark.png" alt="Figure 19: Gains on VisBench and UrbanVideo">
+        <figcaption><strong>Figure 19.</strong> ROVA improves accuracy on VisBench and UrbanVideo under perturbations by +14.6% and +12.9% on average, and also boosts clean performance.</figcaption>
+      </figure>
     </section>
 
-    <section id="bibtex">
-        <h2>Citation</h2>
-        <hr>
-        <pre><code>@article{he2026rova,
-    title={Are Video Reasoning Models Ready to Go Outside?},
-    author={He, Yangfan and Boo, Changgyu and Yoon, Jaehong},
-    journal={arXiv preprint arXiv:2601.18577},
-    year={2026}
-}</code></pre>
-    </section>
-
+    <!-- BibTeX -->
     <section>
-        <h2>Acknowledgement</h2>
-        <hr>
-        <p>This page is based on the <a href="https://github.com/agwmon/self-refine-video">self-refine-video</a> project page template. We thank the authors for sharing.</p>
+      <h2>Citation</h2>
+      <div class="bibtex">
+        <pre>@article{he2026rova,
+  title={Are Video Reasoning Models Ready to Go Outside?},
+  author={He, Yangfan and Boo, Changgyu and Yoon, Jaehong},
+  journal={arXiv preprint arXiv:2601.18577},
+  year={2026}
+}</pre>
+      </div>
     </section>
 
-</div>
+    <hr>
+
+    <footer>
+      <p>Website template adapted from <a href="#">self-refine-video</a> · All images correspond to figures/tables in the paper.</p>
+    </footer>
+  </main>
 </body>
 </html>
