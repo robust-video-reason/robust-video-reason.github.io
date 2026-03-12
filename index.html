@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROVA: Robust Video Alignment for Real‑World Reasoning</title>
-  <!-- Inter font (clean & modern) -->
+  <title>ROVA: Robust Video Alignment for Real-World Reasoning</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-  <!-- Font Awesome 6 (free) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,33 +21,27 @@
       margin: 0 auto;
       padding: 0 2rem;
     }
-    /* hero – bold and clean */
     .hero {
       background: linear-gradient(145deg, #0b1e2e, #17354d);
       color: white;
-      padding: 3.5rem 2rem 4rem;
+      padding: 3.5rem 2rem 3.5rem;
       border-radius: 0 0 3rem 3rem;
       margin-bottom: 2rem;
       box-shadow: 0 20px 30px -10px #0a1e2f80;
     }
     .hero h1 {
-      font-size: clamp(2.8rem, 8vw, 5.2rem);
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
       font-weight: 800;
       letter-spacing: -0.02em;
-      line-height: 1.1;
-    }
-    .hero .subtitle {
-      font-size: 1.9rem;
-      font-weight: 300;
-      color: #b0e0ff;
-      margin: 0.5rem 0 1.5rem;
+      line-height: 1.15;
     }
     .authors {
       display: flex;
       flex-wrap: wrap;
-      gap: 2rem;
-      font-size: 1.4rem;
-      margin: 1.8rem 0 0.3rem;
+      gap: 1.8rem;
+      font-size: 1.3rem;
+      margin: 1.6rem 0 0.2rem;
+      align-items: baseline;
     }
     .authors a {
       color: #ffdb8e;
@@ -57,35 +49,43 @@
       border-bottom: 1px solid #ffdb8e80;
     }
     .authors a:hover { color: white; border-color: white; }
-    .equal {
-      font-size: 1rem;
-      opacity: 0.8;
-      margin-bottom: 1.2rem;
+    .affiliations {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      font-size: 0.95rem;
+      color: #a0c8e8;
+      margin: 0.6rem 0 0.2rem;
     }
-    .venue-badge {
-      background: #ffffff20;
-      backdrop-filter: blur(10px);
-      padding: 0.5rem 1.5rem;
-      border-radius: 40px;
-      display: inline-block;
-      font-weight: 600;
-      border: 1px solid #ffffff50;
-      margin-right: 1rem;
+    .affiliations span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .aff-num {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #ffdb8e;
+    }
+    .equal {
+      font-size: 0.9rem;
+      opacity: 0.75;
+      margin-bottom: 0.4rem;
     }
     .button-group {
       display: flex;
       flex-wrap: wrap;
       gap: 1.2rem;
-      margin: 2.5rem 0 0.5rem;
+      margin: 2rem 0 0.5rem;
     }
     .btn {
-      padding: 0.9rem 2.5rem;
+      padding: 0.8rem 2.2rem;
       border-radius: 60px;
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.7rem;
       text-decoration: none;
       transition: 0.2s;
     }
@@ -101,8 +101,6 @@
       border: 1px solid white;
     }
     .btn-outline:hover { background: #ffffff30; transform: translateY(-3px); }
-
-    /* section styling */
     section { margin: 4rem 0; }
     h2 {
       font-size: 2.4rem;
@@ -145,6 +143,11 @@
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
     }
     .table-responsive {
@@ -190,93 +193,108 @@
       margin: 4rem 0 2rem;
     }
     hr { border: none; height: 1px; background: #bdd6ec; margin: 2rem 0; }
+    /* PDF <object> styling to match <img> look */
+    figure object {
+      max-width: 100%;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 20px #00000020;
+      display: block;
+      margin: 0 auto;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
   <div class="hero">
     <div class="container">
-      <h1>Are Video Reasoning Models<br>Ready to Go Outside?</h1>
+      <h1>Are Video Reasoning Models Ready to Go Outside?</h1>
       <div class="authors">
         <span><a href="#">Yangfan He<sup>1</sup></a></span>
         <span><a href="#">Changgyu Boo<sup>2</sup></a></span>
-        <span><a href="#">Jaehong Yoon<sup>3,†</sup></a></span>
+        <span><a href="https://jaehong31.github.io/">Jaehong Yoon<sup>1,&dagger;</sup></a></span>
       </div>
-      <div class="equal"><sup>†</sup>Corresponding author</div>
-      <div>
-        <span class="venue-badge"><i class="fa-regular fa-file-lines"></i> arXiv 2026</span>
-        <span class="venue-badge"><i class="fa-regular fa-calendar"></i> ECCV 2026 under review</span>
+      <div class="affiliations">
+        <span><span class="aff-num">1</span> Nanyang Technological University, Singapore</span>
+        <span><span class="aff-num">2</span> Korea University, South Korea</span>
       </div>
+      <div class="equal"><sup>&dagger;</sup> Corresponding author</div>
       <div class="button-group">
         <a href="#" class="btn btn-primary"><i class="fa-regular fa-file-pdf"></i> Paper (arXiv)</a>
-        <a href="#" class="btn btn-outline"><i class="fa-brands fa-github"></i> Code & Dataset</a>
-        <a href="#" class="btn btn-outline"><i class="fa-regular fa-compass"></i> PVRBench</a>
+        <a href="https://github.com/codepassionor/ROVA" class="btn btn-outline"><i class="fa-brands fa-github"></i> Code</a>
+        <a href="https://huggingface.co/DuHeng0128/Qwen2.5-VL-7B-MASK" class="btn btn-outline"><i class="fa-regular fa-compass"></i> PVRBench</a>
       </div>
     </div>
   </div>
 
   <main class="container">
-    <!-- Abstract -->
-    <section>
-      <h2>Abstract</h2>
-      <div class="card" style="font-size: 1.2rem;">
-        <p>In real‑world deployment, vision‑language models often encounter disturbances such as weather, occlusion, and camera motion. Under such conditions, their understanding and reasoning degrade substantially—up to <strong>35% accuracy drop</strong> and <strong>28% reasoning quality drop</strong> in our evaluation. We propose <strong>ROVA</strong>, a training framework that improves robustness via a robustness‑aware consistency reward under spatio‑temporal corruptions. ROVA introduces a difficulty‑aware online training strategy that prioritizes informative samples based on the model’s evolving capability. We also introduce <strong>PVRBench</strong>, a new benchmark with 12 realistic perturbation types across 27 scene categories. ROVA boosts relative accuracy by at least <strong>24%</strong> and reasoning by over <strong>9%</strong> compared to baselines, while also improving performance on clean data.</p>
-      </div>
-    </section>
 
-    <!-- Figure 1: Failure cases -->
-    <section>
-      <h2>Motivation: VLMs Fail Under Realistic Perturbations</h2>
-      <figure>
-        <img src="./asstes/rova/fig1_failure_cases.pdf" alt="Figure 1: Failure cases of baseline model under occlusion and fog">
-        <figcaption><strong>Figure 1.</strong> Failure cases of Qwen2.5‑VL under occlusion (left) and fog (right). The model incorrectly predicts "Turn Left" or "Turn Right" instead of the ground‑truth "Go Ahead". These examples motivate robustness‑aware training.</figcaption>
-      </figure>
-    </section>
-
-    <!-- ROVA overview: Figure 2 -->
+    <!-- ===== ROVA overview figure (BEFORE abstract) ===== -->
     <section>
       <h2>ROVA: Robust Video Alignment</h2>
       <figure>
-        <img src="asstes/rova/fig2_overview.pdf" alt="Figure 2: Overview of ROVA framework">
-        <figcaption><strong>Figure 2.</strong> ROVA consists of (1) structured spatio‑temporal corruption, (2) self‑reflective difficulty‑aware training, and (3) dual‑branch alignment with GRPO.</figcaption>
+        <img class="dual-src" data-base="asstes/rova/fig2_overview" alt="Figure 2: Overview of ROVA framework">
+        <figcaption><strong>Figure 2.</strong> ROVA consists of (1) structured spatio-temporal corruption, (2) self-reflective difficulty-aware training, and (3) dual-branch alignment with GRPO.</figcaption>
       </figure>
-      <div class="grid-2">
+    </section>
+
+    <!-- ===== Abstract ===== -->
+    <section>
+      <h2>Abstract</h2>
+      <div class="card" style="font-size: 1.2rem;">
+        <p>In real-world deployment, vision-language models often encounter disturbances such as weather, occlusion, and camera motion. Under such conditions, their understanding and reasoning degrade substantially &mdash; up to <strong>35% accuracy drop</strong> and <strong>28% reasoning quality drop</strong> in our evaluation. We propose <strong>ROVA</strong>, a training framework that improves robustness via a robustness-aware consistency reward under spatio-temporal corruptions. ROVA introduces a difficulty-aware online training strategy that prioritizes informative samples based on the model's evolving capability. We also introduce <strong>PVRBench</strong>, a new benchmark with 12 realistic perturbation types across 27 scene categories. ROVA boosts relative accuracy by at least <strong>24%</strong> and reasoning by over <strong>9%</strong> compared to baselines, while also improving performance on clean data.</p>
+      </div>
+    </section>
+
+    <!-- ===== Figure 1: Failure cases ===== -->
+    <section>
+      <h2>Motivation: VLMs Fail Under Realistic Perturbations</h2>
+      <figure>
+        <img class="dual-src" data-base="asstes/rova/fig1_failure_cases" alt="Figure 1: Failure cases under occlusion and fog">
+        <figcaption><strong>Figure 1.</strong> Failure cases of Qwen2.5-VL under occlusion (left) and fog (right). The model incorrectly predicts &ldquo;Turn Left&rdquo; or &ldquo;Turn Right&rdquo; instead of the ground-truth &ldquo;Go Ahead&rdquo;.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===== ROVA components ===== -->
+    <section>
+      <h2>Framework Components</h2>
+      <div class="grid-3">
         <div class="card">
-          <i class="fa-regular fa-cloud-rain" style="font-size:2rem; color:#1f6fb0;"></i>
-          <h3>① Structured Corruption</h3>
+          <i class="fas fa-cloud-sun-rain" style="font-size:2rem; color:#1f6fb0;"></i>
+          <h3>&circled1; Structured Corruption</h3>
           <p>We inject temporally coherent, spatially grounded perturbations (weather, lighting, camera motion, occlusion) via learnable masks.</p>
         </div>
         <div class="card">
-          <i class="fa-regular fa-brain" style="font-size:2rem;"></i>
-          <h3>② Self‑Reflective Difficulty</h3>
+          <i class="fas fa-brain" style="font-size:2rem; color:#1f6fb0;"></i>
+          <h3>&circled2; Self-Reflective Difficulty</h3>
           <p>The model evaluates its own predictions on corrupted samples, discarding easy ones, storing hard ones in a memory buffer, and training on informative samples.</p>
         </div>
         <div class="card">
-          <i class="fa-regular fa-code-branch" style="font-size:2rem;"></i>
-          <h3>③ Dual‑Branch Alignment</h3>
-          <p>Clean and perturbed branches are aligned via GRPO using format, accuracy, and reasoning‑similarity rewards.</p>
+          <i class="fas fa-code-branch" style="font-size:2rem; color:#1f6fb0;"></i>
+          <h3>&circled3; Dual-Branch Alignment</h3>
+          <p>Clean and perturbed branches are aligned via GRPO using format, accuracy, and reasoning-similarity rewards.</p>
         </div>
       </div>
     </section>
 
-    <!-- PVRBench: Table 1 & Figure 3 -->
+    <!-- ===== PVRBench ===== -->
     <section>
       <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
       <figure>
-        <img src="asstes/rova/table1_benchmark_comparison.png" alt="Table 1: Comparison with existing benchmarks">
+        <img class="dual-src" data-base="asstes/rova/table1_benchmark_comparison" alt="Table 1: Comparison with existing benchmarks">
         <figcaption><strong>Table 1.</strong> PVRBench is the only benchmark with synthetic, spatial, and temporal perturbations across 27 scene categories.</figcaption>
       </figure>
       <figure>
-        <img src="asstes/rova/fig3_perturbation_types.jpg" alt="Figure 3: Four perturbation categories">
+        <img class="dual-src" data-base="asstes/rova/fig3_perturbation_types" data-exts="jpg,png,pdf" alt="Figure 3: Four perturbation categories">
         <figcaption><strong>Figure 3.</strong> Examples of lighting, camera motion, occlusion, and weather perturbations in PVRBench.</figcaption>
       </figure>
     </section>
 
-    <!-- Main results: Table 2 -->
+    <!-- ===== Main results: Table 2 ===== -->
     <section>
       <h2>Main Results on PVRBench</h2>
       <div class="table-responsive">
         <table>
-          <thead><tr><th>Model</th><th>Size</th><th>Light.</th><th>Occ.</th><th>Shake</th><th>Weather</th><th>Avg. Pert.</th><th>Clean</th><th>Reasoning↑</th></tr></thead>
+          <thead><tr><th>Model</th><th>Size</th><th>Light.</th><th>Occ.</th><th>Shake</th><th>Weather</th><th>Avg. Pert.</th><th>Clean</th><th>Reasoning&uarr;</th></tr></thead>
           <tbody>
             <tr><td>GPT-4o</td><td>-</td><td>0.47</td><td>0.50</td><td>0.52</td><td>0.51</td><td>0.50</td><td>0.59</td><td>3.82</td></tr>
             <tr><td>Gemini-3-Pro</td><td>-</td><td>0.57</td><td>0.52</td><td>0.54</td><td>0.55</td><td>0.55</td><td>0.61</td><td>3.91</td></tr>
@@ -289,56 +307,54 @@
           </tbody>
         </table>
       </div>
-      <figcaption style="margin-top:0.5rem;"><strong>Table 2.</strong> Accuracy under four perturbation types and reasoning quality (0–5 scale). ROVA consistently outperforms baselines.</figcaption>
+      <figcaption style="margin-top:0.5rem;"><strong>Table 2.</strong> Accuracy under four perturbation types and reasoning quality (0&ndash;5 scale). ROVA consistently outperforms baselines.</figcaption>
     </section>
 
-    <!-- Training efficiency: Table 3 -->
+    <!-- ===== Efficiency ===== -->
     <section>
-      <h2>Efficiency & Data Economy</h2>
+      <h2>Efficiency &amp; Data Economy</h2>
       <div class="table-responsive" style="max-width:700px; margin:0 auto;">
         <table>
-          <thead><tr><th>Method</th><th>Data</th><th>GPUs</th><th>GPU‑h</th><th>Avg. Acc.</th></tr></thead>
+          <thead><tr><th>Method</th><th>Data</th><th>GPUs</th><th>GPU-h</th><th>Avg. Acc.</th></tr></thead>
           <tbody>
-            <tr><td>Video-R1</td><td>425K</td><td>8×A100</td><td>339.2</td><td>0.49</td></tr>
-            <tr><td>Naïve Dual</td><td>32.5K</td><td>4×A100</td><td>142.8</td><td>0.48</td></tr>
-            <tr class="highlight"><td>ROVA</td><td>32.5K</td><td>4×A100</td><td>134.4</td><td>0.53</td></tr>
+            <tr><td>Video-R1</td><td>425K</td><td>8&times;A100</td><td>339.2</td><td>0.49</td></tr>
+            <tr><td>Na&iuml;ve Dual</td><td>32.5K</td><td>4&times;A100</td><td>142.8</td><td>0.48</td></tr>
+            <tr class="highlight"><td>ROVA</td><td>32.5K</td><td>4&times;A100</td><td>134.4</td><td>0.53</td></tr>
           </tbody>
         </table>
       </div>
-      <figcaption><strong>Table 3.</strong> ROVA achieves higher accuracy with 60% fewer GPU hours and 8× less data than Video‑R1.</figcaption>
+      <figcaption><strong>Table 3.</strong> ROVA achieves higher accuracy with 60% fewer GPU hours and 8&times; less data than Video-R1.</figcaption>
     </section>
 
-    <!-- Ablation studies: Figure 5 (a,b)  [Note: PDF has Figure 4 and 5, we combine] -->
+    <!-- ===== Ablation ===== -->
     <section>
       <h2>Ablation and Analysis</h2>
       <div class="grid-2">
         <figure>
-          <img src="asstes/rova/fig5a_ablation_components.pdf" alt="Figure 5a: Component ablation">
+          <img class="dual-src" data-base="asstes/rova/fig5a_ablation_components" alt="Figure 5a: Component ablation">
           <figcaption><strong>Figure 5a.</strong> Contribution of each ROVA component. Reasoning reward gives the largest gain.</figcaption>
         </figure>
         <figure>
-          <img src="asstes/rova/fig5b_mask_ablation.pdf" alt="Figure 5b: Mask style generalization">
+          <img class="dual-src" data-base="asstes/rova/fig5b_mask_ablation" alt="Figure 5b: Mask style generalization">
           <figcaption><strong>Figure 5b.</strong> Structured masks generalize to unseen perturbations (red bars), outperforming random masking.</figcaption>
         </figure>
       </div>
       <figure>
-        <img src="asstes/rova/fig5_curriculum_analysis.pdf" alt="Figure 5c: Self-reflective evaluation dynamics">
-        <figcaption><strong>Figure 5c.</strong> Self‑reflective evaluation: easy samples are increasingly discarded, difficult samples re‑evaluated and re‑classified as training progresses.</figcaption>
+        <img class="dual-src" data-base="asstes/rova/fig5_curriculum_analysis" alt="Figure 5c: Self-reflective evaluation dynamics">
+        <figcaption><strong>Figure 5c.</strong> Self-reflective evaluation: easy samples are increasingly discarded, difficult samples re-evaluated and re-classified as training progresses.</figcaption>
       </figure>
     </section>
 
-  
-
-    <!-- Cross‑benchmark generalization (Figure 19 mentioned in text) -->
+    <!-- ===== Cross-benchmark ===== -->
     <section>
       <h2>Generalization to Other Benchmarks</h2>
       <figure>
-        <img src="asstes/rova/fig19_cross_benchmark.png" alt="Figure 19: Gains on VisBench and UrbanVideo">
+        <img class="dual-src" data-base="asstes/rova/fig19_cross_benchmark" alt="Figure 19: Gains on VisBench and UrbanVideo">
         <figcaption><strong>Figure 19.</strong> ROVA improves accuracy on VisBench and UrbanVideo under perturbations by +14.6% and +12.9% on average, and also boosts clean performance.</figcaption>
       </figure>
     </section>
 
-    <!-- BibTeX -->
+    <!-- ===== BibTeX ===== -->
     <section>
       <h2>Citation</h2>
       <div class="bibtex">
@@ -352,10 +368,71 @@
     </section>
 
     <hr>
-
     <footer>
-      <p>Website template adapted from <a href="#">self-refine-video</a> · All images correspond to figures/tables in the paper.</p>
+      <p>Website template adapted from <a href="#">self-refine-video</a></p>
     </footer>
   </main>
+
+  <!--
+    ==========================================================
+    Image Format Resolver  (PNG / JPG / PDF auto-detection)
+    ==========================================================
+    Every <img class="dual-src"> carries:
+      data-base  = path WITHOUT extension  (required)
+      data-exts  = comma list of extensions to try
+                   (optional; default "png,jpg,pdf")
+
+    Logic:
+      - For png / jpg / svg / webp  ->  load directly in <img>
+      - For pdf  ->  replace <img> with <object> so the
+        browser's built-in PDF viewer renders it inline
+      - If ALL formats fail  ->  alt text remains visible
+    ==========================================================
+  -->
+  <script>
+  (function () {
+    var RASTER = {'png':1,'jpg':1,'jpeg':1,'svg':1,'webp':1,'gif':1};
+
+    document.querySelectorAll('img.dual-src').forEach(function (img) {
+      var base = img.getAttribute('data-base');
+      if (!base) return;
+      var exts = (img.getAttribute('data-exts') || 'png,jpg,pdf').split(',');
+      attempt(img, base, exts, 0);
+    });
+
+    function attempt(img, base, exts, i) {
+      if (i >= exts.length) { img.style.display = 'none'; return; }
+      var ext = exts[i].trim();
+      var url = base + '.' + ext;
+
+      if (RASTER[ext]) {                       // --- raster / SVG ---
+        var t = new Image();
+        t.onload  = function () { img.src = url; };
+        t.onerror = function () { attempt(img, base, exts, i + 1); };
+        t.src = url;
+      } else if (ext === 'pdf') {              // --- PDF ---
+        var obj = document.createElement('object');
+        obj.data = url;
+        obj.type = 'application/pdf';
+        obj.style.cssText =
+          'width:100%;min-height:500px;border-radius:1.5rem;'
+        + 'box-shadow:0 8px 20px rgba(0,0,0,.08);display:block;margin:0 auto;';
+
+        // nested fallback: clickable link if <object> also fails
+        var link = document.createElement('p');
+        link.style.cssText = 'padding:2rem;text-align:center;';
+        link.innerHTML =
+          '<a href="' + url + '" target="_blank" '
+        + 'style="color:#2b7fc2;font-weight:600">'
+        + '&#128196; View figure (PDF)</a>';
+        obj.appendChild(link);
+
+        img.parentNode.replaceChild(obj, img);
+      } else {
+        attempt(img, base, exts, i + 1);       // unknown ext, skip
+      }
+    }
+  })();
+  </script>
 </body>
 </html>
