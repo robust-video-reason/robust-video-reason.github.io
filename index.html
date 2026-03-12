@@ -3,443 +3,604 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROVA: Robust Video Alignment for Real-World Reasoning</title>
+  <title>ROVA — Are Video Reasoning Models Ready to Go Outside?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --ink: #0c1a2a;
+      --ink-light: #2a3f55;
+      --ink-muted: #5a7089;
+      --sky: #f3f7fb;
+      --sky-deep: #e4edf6;
+      --accent: #1a6dd4;
+      --accent-light: #3d8ef0;
+      --accent-glow: #1a6dd420;
+      --gold: #e8a838;
+      --gold-soft: #fdf4e2;
+      --coral: #e85d4a;
+      --emerald: #22a06b;
+      --radius: 1.25rem;
+      --radius-lg: 2rem;
+      --shadow-sm: 0 2px 8px rgba(12,26,42,0.06);
+      --shadow-md: 0 8px 30px rgba(12,26,42,0.09);
+      --shadow-lg: 0 20px 60px rgba(12,26,42,0.12);
+      --shadow-xl: 0 30px 80px rgba(12,26,42,0.16);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: "Inter", sans-serif;
-      background: #f9fcff;
-      color: #1a2b3c;
-      line-height: 1.5;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--sky);
+      color: var(--ink);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
     }
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
+
+    /* ========== HERO ========== */
     .hero {
-      background: linear-gradient(145deg, #0b1e2e, #17354d);
-      color: white;
-      padding: 3.5rem 2rem 3.5rem;
-      border-radius: 0 0 3rem 3rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 20px 30px -10px #0a1e2f80;
+      position: relative;
+      background: linear-gradient(160deg, #07111e 0%, #0d2240 40%, #14375e 100%);
+      color: #fff;
+      padding: 4rem 2rem 3.5rem;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 70% 20%, rgba(26,109,212,0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(232,168,56,0.08), transparent);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--accent), var(--gold), var(--coral), var(--accent));
+    }
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      text-align: center;
     }
     .hero h1 {
-      font-size: clamp(1.8rem, 5vw, 3.2rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 700;
       line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+    .hero-sub {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 2rem;
+      letter-spacing: 0.04em;
     }
     .authors {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.8rem;
-      font-size: 1.3rem;
-      margin: 1.6rem 0 0.2rem;
-      align-items: baseline;
+      justify-content: center;
+      gap: 0.3rem 2rem;
+      font-size: 1.15rem;
+      margin-bottom: 0.4rem;
     }
     .authors a {
-      color: #ffdb8e;
+      color: #ffd97a;
       text-decoration: none;
-      border-bottom: 1px solid #ffdb8e80;
+      font-weight: 600;
+      transition: color .2s;
     }
-    .authors a:hover { color: white; border-color: white; }
+    .authors a:hover { color: #fff; }
+    .authors sup { font-size: 0.7em; margin-left: 1px; }
     .affiliations {
       display: flex;
       flex-wrap: wrap;
-      gap: 2rem;
-      font-size: 0.95rem;
-      color: #a0c8e8;
-      margin: 0.6rem 0 0.2rem;
+      justify-content: center;
+      gap: 0.3rem 2rem;
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 0.3rem;
     }
-    .affiliations span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
+    .affiliations .n { color: #ffd97a; font-weight: 700; font-size: 0.8em; margin-right: 4px; }
+    .corresponding {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1.6rem;
     }
-    .aff-num {
-      font-weight: 700;
-      font-size: 0.8rem;
-      color: #ffdb8e;
-    }
-    .equal {
-      font-size: 0.9rem;
-      opacity: 0.75;
-      margin-bottom: 0.4rem;
-    }
-    .button-group {
+    .btn-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.2rem;
-      margin: 2rem 0 0.5rem;
+      justify-content: center;
+      gap: 1rem;
     }
     .btn {
-      padding: 0.8rem 2.2rem;
-      border-radius: 60px;
-      font-weight: 600;
-      font-size: 1.1rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.7rem;
+      gap: 0.6rem;
+      padding: 0.75rem 2rem;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 600;
       text-decoration: none;
-      transition: 0.2s;
+      transition: all .25s;
+      cursor: pointer;
     }
     .btn-primary {
-      background: white;
-      color: #0b1e2e;
-      box-shadow: 0 8px 16px #00000030;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
-    .btn-primary:hover { background: #e0f0ff; transform: translateY(-3px); }
-    .btn-outline {
-      background: transparent;
-      color: white;
-      border: 1px solid white;
+    .btn-primary:hover { background: #e6f0ff; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(4px);
     }
-    .btn-outline:hover { background: #ffffff30; transform: translateY(-3px); }
-    section { margin: 4rem 0; }
-    h2 {
-      font-size: 2.4rem;
+    .btn-ghost:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+    .btn-emoji { font-size: 1.15em; }
+
+    /* ========== LAYOUT ========== */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    section {
+      margin: 3.5rem 0;
+      animation: fadeUp .6s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section heading */
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      letter-spacing: -0.01em;
-      margin-bottom: 2rem;
-      color: #0b2c42;
-      border-left: 8px solid #2b7fc2;
-      padding-left: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
     }
-    h3 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin: 2rem 0 1rem;
-      color: #17354d;
+    .section-tag .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
     }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    /* Cards */
     .card {
-      background: white;
-      border-radius: 2.5rem;
+      background: #fff;
+      border-radius: var(--radius-lg);
       padding: 2rem;
-      box-shadow: 0 12px 30px rgba(0, 30, 50, 0.08);
-      border: 1px solid #e3eef9;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    /* Figures */
+    .fig-wrap {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(0,0,0,0.04);
       margin-bottom: 2rem;
+      overflow: hidden;
     }
-    figure {
-      margin: 2rem 0;
-      text-align: center;
+    .fig-wrap img {
+      display: block;
+      width: 100%;
+      border-radius: var(--radius);
     }
-    figure img {
+    .fig-wrap.compact img {
+      width: auto;
       max-width: 100%;
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 20px #00000020;
+      margin: 0 auto;
     }
-    figcaption {
-      font-size: 0.95rem;
-      color: #4a5f73;
-      margin-top: 0.5rem;
-      text-align: center;
+    .fig-cap {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+      padding: 0 0.5rem;
     }
+    .fig-cap strong { color: var(--ink-light); }
+
+    /* Grid layouts */
     .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
     }
     .grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
     }
-    .table-responsive {
-      overflow-x: auto;
-      background: white;
-      border-radius: 1.8rem;
-      padding: 0.2rem;
-      box-shadow: 0 8px 20px #00000010;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    th {
-      background: #0b2c42;
-      color: white;
-      padding: 1rem 0.8rem;
-      font-weight: 600;
-    }
-    td {
-      padding: 0.9rem 0.8rem;
-      border-bottom: 1px solid #d2e2f0;
-    }
-    tr:last-child td { border-bottom: none; }
-    .highlight {
-      background: #d4e8ff;
-      font-weight: 600;
-      border-left: 6px solid #2b7fc2;
-    }
-    .bibtex {
-      background: #1e2f3f;
-      color: #d4e9ff;
+
+    /* Feature cards */
+    .feat-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
       padding: 1.8rem;
-      border-radius: 2rem;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .feat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .feat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    .feat-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+    }
+    .feat-card p {
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+    }
+
+    /* Stat highlights */
+    .stats-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 2rem 0;
+      justify-content: center;
+    }
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--accent), #1254a8);
+      color: #fff;
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 16px rgba(26,109,212,0.25);
+    }
+    .stat-pill .num { font-size: 1.4rem; font-weight: 800; }
+    .stat-pill.gold { background: linear-gradient(135deg, #d4920a, #e8a838); box-shadow: 0 4px 16px rgba(232,168,56,0.25); }
+    .stat-pill.coral { background: linear-gradient(135deg, #c94535, #e85d4a); box-shadow: 0 4px 16px rgba(232,93,74,0.25); }
+
+    /* Table image specific styling */
+    .table-img-wrap {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(0,0,0,0.04);
+      margin-bottom: 2rem;
+      text-align: center;
       overflow-x: auto;
     }
-    footer {
-      text-align: center;
-      color: #4f6f8a;
-      margin: 4rem 0 2rem;
-    }
-    hr { border: none; height: 1px; background: #bdd6ec; margin: 2rem 0; }
-    /* PDF <object> styling */
-    figure object {
-      max-width: 100%;
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 20px #00000020;
+    .table-img-wrap img {
       display: block;
       margin: 0 auto;
-      overflow: hidden;
+      max-width: 100%;
+    }
+
+    /* Abstract text */
+    .abstract-text {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--ink-light);
+    }
+    .abstract-text strong { color: var(--ink); }
+
+    /* BibTeX */
+    .bibtex-block {
+      background: linear-gradient(160deg, #0d1f33, #142d4a);
+      color: #b8d4f0;
+      padding: 1.8rem 2rem;
+      border-radius: var(--radius-lg);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      position: relative;
+    }
+    .bibtex-block pre { white-space: pre-wrap; word-break: break-all; }
+    .copy-btn {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #b8d4f0;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background .2s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--sky-deep), transparent);
+      margin: 3rem 0;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      color: var(--ink-muted);
+      padding: 2rem 0 3rem;
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* TOC nav */
+    .toc-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 1.2rem;
+      margin: 2.5rem 0 0;
+    }
+    .toc-nav a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.3rem 0;
+      border-bottom: 1.5px solid transparent;
+      transition: all .2s;
+    }
+    .toc-nav a:hover { color: #fff; border-bottom-color: var(--gold); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero { padding: 2.5rem 1.2rem 2rem; }
+      section { margin: 2.5rem 0; }
+      .fig-wrap { padding: 1rem; border-radius: var(--radius); }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .stats-bar { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
-  <div class="hero">
-    <div class="container">
-      <h1>Are Video Reasoning Models Ready to Go Outside?</h1>
-      <div class="authors">
-        <span><a href="#">Yangfan He<sup>1</sup></a></span>
-        <span><a href="#">Changgyu Boo<sup>2</sup></a></span>
-        <span><a href="https://jaehong31.github.io/">Jaehong Yoon<sup>1,&dagger;</sup></a></span>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero">
+  <div class="hero-inner">
+    <h1>Are Video Reasoning Models<br>Ready to Go Outside?</h1>
+    <div class="hero-sub">ROVA &mdash; Robust Video Alignment for Real-World Video Reasoning</div>
+
+    <div class="authors">
+      <span><a href="#">Yangfan He<sup>1</sup></a></span>
+      <span><a href="#">Changgyu Boo<sup>2</sup></a></span>
+      <span><a href="https://jaehong31.github.io/">Jaehong Yoon<sup>1,&dagger;</sup></a></span>
+    </div>
+    <div class="affiliations">
+      <span><span class="n">1</span> Nanyang Technological University, Singapore</span>
+      <span><span class="n">2</span> Korea University, South Korea</span>
+    </div>
+    <div class="corresponding"><sup>&dagger;</sup> Corresponding author</div>
+
+    <div class="btn-row">
+      <a href="https://arxiv.org/abs/2603.10652" class="btn btn-primary"><span class="btn-emoji">📄</span> Paper (arXiv)</a>
+      <a href="https://github.com/codepassionor/ROVA" class="btn btn-ghost"><span class="btn-emoji">💻</span> Code</a>
+      <a href="https://huggingface.co/DuHeng0128/Qwen2.5-VL-7B-MASK" class="btn btn-ghost"><span class="btn-emoji">🗂️</span> PVRBench</a>
+    </div>
+
+    <nav class="toc-nav">
+      <a href="#overview">Overview</a>
+      <a href="#motivation">Motivation</a>
+      <a href="#components">Components</a>
+      <a href="#benchmark">PVRBench</a>
+      <a href="#results">Results</a>
+      <a href="#ablation">Ablation</a>
+      <a href="#generalization">Generalization</a>
+      <a href="#case-study">Case Study</a>
+      <a href="#citation">Citation</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ==================== ABSTRACT ==================== -->
+  <section>
+    <div class="section-tag"><span class="dot"></span>Abstract</div>
+    <h2>TL;DR</h2>
+    <div class="card">
+      <p class="abstract-text">
+        In real-world deployment, vision-language models often encounter disturbances such as <strong>weather</strong>, <strong>occlusion</strong>, and <strong>camera motion</strong>. Under such conditions, their understanding and reasoning degrade substantially. We propose <strong>ROVA</strong>, a training framework that improves robustness via a <strong>robustness-aware consistency reward</strong> under spatio-temporal corruptions. ROVA introduces a <strong>difficulty-aware online training strategy</strong> that prioritizes informative samples based on the model's evolving capability. We also introduce <strong>PVRBench</strong>, a new benchmark with 12 realistic perturbation types across 27 scene categories for evaluating accuracy and reasoning quality under realistic disturbances.
+      </p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-pill"><span class="num">24%+</span> Accuracy Boost</div>
+      <div class="stat-pill gold"><span class="num">9%+</span> Reasoning Gain</div>
+      <div class="stat-pill coral"><span class="num">60%</span> Fewer GPU Hours</div>
+    </div>
+  </section>
+
+  <!-- ==================== OVERVIEW ==================== -->
+  <section id="overview">
+    <div class="section-tag"><span class="dot"></span>Framework</div>
+    <h2>ROVA: Robust Video Alignment</h2>
+    <div class="fig-wrap">
+      <img src="asstes/rova/fig2_overview.png" alt="Figure 2: ROVA Framework Overview">
+      <p class="fig-cap"><strong>Figure 2.</strong> ROVA consists of three stages: <strong>(1)</strong> Structured spatio-temporal corruption generates realistic perturbations; <strong>(2)</strong> Self-reflective difficulty-aware training continuously re-estimates sample difficulty via a memory buffer; <strong>(3)</strong> Dual-branch alignment uses clean and corrupted paths with GRPO to optimize robustness-aware consistency, format, and accuracy rewards.</p>
+    </div>
+  </section>
+
+  <!-- ==================== MOTIVATION ==================== -->
+  <section id="motivation">
+    <div class="section-tag"><span class="dot"></span>Motivation</div>
+    <h2>VLMs Fail Under Realistic Perturbations</h2>
+    <div class="fig-wrap">
+      <img src="asstes/rova/fig1_failure_cases.png" alt="Figure 1: Failure cases under occlusion and fog">
+      <p class="fig-cap"><strong>Figure 1.</strong> Failure cases of state-of-the-art VLMs (e.g., Qwen2.5-VL) under occlusion (left) and fog (right). The model incorrectly predicts &ldquo;Turn Left&rdquo; or &ldquo;Turn Right&rdquo; instead of the ground-truth &ldquo;Go Ahead&rdquo;, demonstrating how visual corruptions drastically impair video reasoning capability.</p>
+    </div>
+  </section>
+
+  <!-- ==================== COMPONENTS ==================== -->
+  <section id="components">
+    <div class="section-tag"><span class="dot"></span>Method</div>
+    <h2>Framework Components</h2>
+    <div class="grid-3">
+      <div class="feat-card">
+        <span class="feat-icon">🌧️</span>
+        <h3>① Structured Corruption</h3>
+        <p>Injects temporally coherent, spatially grounded perturbations &mdash; weather effects (rain, snow, hail, storm), photometric shifts (dusk, night, overexposure), camera shake, and random occlusion &mdash; to simulate realistic visual disturbances.</p>
       </div>
-      <div class="affiliations">
-        <span><span class="aff-num">1</span> Nanyang Technological University, Singapore</span>
-        <span><span class="aff-num">2</span> Korea University, South Korea</span>
+      <div class="feat-card">
+        <span class="feat-icon">🧠</span>
+        <h3>② Self-Reflective Difficulty</h3>
+        <p>The model evaluates its own predictions on corrupted samples. Easy samples are discarded; hard ones are stored in a memory buffer and periodically re-evaluated, ensuring training focuses on the most informative examples.</p>
       </div>
-      <div class="equal"><sup>&dagger;</sup> Corresponding author</div>
-      <div class="button-group">
-        <a href="https://arxiv.org/abs/2603.10652" class="btn btn-primary"><i class="fa-regular fa-file-pdf"></i> Paper (arXiv)</a>
-        <a href="https://github.com/codepassionor/ROVA" class="btn btn-outline"><i class="fa-brands fa-github"></i> Code</a>
-        <a href="https://huggingface.co/DuHeng0128/Qwen2.5-VL-7B-MASK" class="btn btn-outline"><i class="fa-regular fa-compass"></i> PVRBench</a>
+      <div class="feat-card">
+        <span class="feat-icon">🔀</span>
+        <h3>③ Dual-Branch Alignment</h3>
+        <p>Clean and perturbed branches share weights and are jointly optimized via GRPO using format, accuracy, and robustness-aware consistency rewards to minimize reasoning divergence.</p>
       </div>
     </div>
-  </div>
+  </section>
 
-  <main class="container">
+  <!-- ==================== PVRBENCH ==================== -->
+  <section id="benchmark">
+    <div class="section-tag"><span class="dot"></span>Benchmark</div>
+    <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
 
-    <!-- ===== ROVA overview (BEFORE abstract) ===== -->
-    <section>
-      <h2>ROVA: Robust Video Alignment</h2>
-      <figure>
-        <!--
-          data-base : path without extension
-          data-h    : preferred height for PDF embed (px)
-                      "auto" or omit = use aspect-ratio heuristic
-        -->
-        <img class="dual-src" data-base="asstes/rova/fig2_overview.png" data-h="480" alt="Figure 2: Overview of ROVA framework">
-        <figcaption><strong>Figure 2.</strong> ROVA consists of (1) structured spatio-temporal corruption, (2) self-reflective difficulty-aware training, and (3) dual-branch alignment with GRPO.</figcaption>
-      </figure>
-    </section>
+    <div class="table-img-wrap">
+      <img src="asstes/rova/table1_benchmark_comparison.png" alt="Table 1: Comparison with existing benchmarks" style="max-width: 680px;">
+      <p class="fig-cap"><strong>Table 1.</strong> Comparison with existing video benchmarks. PVRBench is the first to provide synthetic, spatial, and temporal perturbations across 27 scene categories with 9K videos and 52K QA pairs, enabling comprehensive robustness evaluation.</p>
+    </div>
+  </section>
 
-    <!-- ===== Abstract ===== -->
-    <section>
-      <h2>Abstract</h2>
-      <div class="card" style="font-size: 1.2rem;">
-        <p>In real-world deployment, vision-language models often encounter disturbances such as weather, occlusion, and camera motion. Under such conditions, their understanding and reasoning degrade substantially &mdash; up to <strong>35% accuracy drop</strong> and <strong>28% reasoning quality drop</strong> in our evaluation. We propose <strong>ROVA</strong>, a training framework that improves robustness via a robustness-aware consistency reward under spatio-temporal corruptions. ROVA introduces a difficulty-aware online training strategy that prioritizes informative samples based on the model's evolving capability. We also introduce <strong>PVRBench</strong>, a new benchmark with 12 realistic perturbation types across 27 scene categories. ROVA boosts relative accuracy by at least <strong>24%</strong> and reasoning by over <strong>9%</strong> compared to baselines, while also improving performance on clean data.</p>
+  <!-- ==================== MAIN RESULTS ==================== -->
+  <section id="results">
+    <div class="section-tag"><span class="dot"></span>Experiments</div>
+    <h2>Main Results on PVRBench</h2>
+
+    <div class="table-img-wrap">
+      <img src="asstes/rova/table2_main_results.png" alt="Table 2: Main results on PVRBench" style="max-width: 720px;">
+      <p class="fig-cap"><strong>Table 2.</strong> Answer accuracy and reasoning quality across four perturbation types on PVRBench. ROVA consistently outperforms both proprietary models (GPT-4o, Gemini-3-Pro, Claude-3.5-Sonnet) and open-source video reasoning models (Video-R1, Embodied-R, LLaVA-Video) at the 7B scale, while the 72B variant achieves state-of-the-art performance.</p>
+    </div>
+
+    <!-- Efficiency -->
+    <div class="section-tag" style="margin-top:2rem;"><span class="dot"></span>Efficiency</div>
+    <h2>Training Efficiency &amp; Data Economy</h2>
+
+    <div class="table-img-wrap">
+      <img src="asstes/rova/table3_efficiency.png" alt="Table 3: Efficiency comparison" style="max-width: 580px;">
+      <p class="fig-cap"><strong>Table 3.</strong> ROVA achieves higher accuracy using only 32.5K training samples and 4&times;A100 GPUs (134 GPU-hours) &mdash; <strong>60% fewer GPU hours</strong> and <strong>8&times; less data</strong> than Video-R1 (425K samples, 8&times;A100, 339 GPU-hours).</p>
+    </div>
+  </section>
+
+  <!-- ==================== ABLATION ==================== -->
+  <section id="ablation">
+    <div class="section-tag"><span class="dot"></span>Analysis</div>
+    <h2>Ablation Studies</h2>
+
+    <div class="grid-2">
+      <div class="fig-wrap" style="margin-bottom:0;">
+        <img src="asstes/rova/fig5a_ablation_components.png" alt="Figure 5a: Component ablation">
+        <p class="fig-cap"><strong>Figure 5a.</strong> Contribution of each ROVA component. The robustness-aware consistency reward provides the largest single gain, while all components combined yield the best performance.</p>
       </div>
-    </section>
-
-    <!-- ===== Figure 1: Failure s ===== -->
-    <section>
-      <h2>Motivation: VLMs Fail Under Realistic Perturbations</h2>
-      <figure>
-        <img class="dual-src" data-base="asstes/rova/fig1_failure_cases.png" data-h="400" alt="Figure 1: Failure cases under occlusion and fog">
-        <figcaption><strong>Figure 1.</strong> Failure cases of Qwen2.5-VL under occlusion (left) and fog (right). The model incorrectly predicts &ldquo;Turn Left&rdquo; or &ldquo;Turn Right&rdquo; instead of the ground-truth &ldquo;Go Ahead&rdquo;.</figcaption>
-      </figure>
-    </section>
-
-    <!-- ===== ROVA components ===== -->
-    <section>
-      <h2>Framework Components</h2>
-      <div class="grid-3">
-        <div class="card">
-          <i class="fas fa-cloud-sun-rain" style="font-size:2rem; color:#1f6fb0;"></i>
-          <h3>&#9312; Structured Corruption</h3>
-          <p>We inject temporally coherent, spatially grounded perturbations (weather, lighting, camera motion, occlusion) via learnable masks.</p>
-        </div>
-        <div class="card">
-          <i class="fas fa-brain" style="font-size:2rem; color:#1f6fb0;"></i>
-          <h3>&#9313; Self-Reflective Difficulty</h3>
-          <p>The model evaluates its own predictions on corrupted samples, discarding easy ones, storing hard ones in a memory buffer, and training on informative samples.</p>
-        </div>
-        <div class="card">
-          <i class="fas fa-code-branch" style="font-size:2rem; color:#1f6fb0;"></i>
-          <h3>&#9314; Dual-Branch Alignment</h3>
-          <p>Clean and perturbed branches are aligned via GRPO using format, accuracy, and reasoning-similarity rewards.</p>
-        </div>
+      <div class="fig-wrap" style="margin-bottom:0;">
+        <img src="asstes/rova/fig5b_mask_ablation.png" alt="Figure 5b: Mask style generalization">
+        <p class="fig-cap"><strong>Figure 5b.</strong> Structured masks generalize to unseen perturbation types (hatched bars), significantly outperforming random masking across all corruption categories.</p>
       </div>
-    </section>
+    </div>
 
-    <!-- ===== PVRBench ===== -->
-    <section>
-      <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
-      <figure>
-        <img class="dual-src" data-base="asstes/rova/table1_benchmark_comparison" data-h="320" alt="Table 1: Comparison with existing benchmarks">
-        <figcaption><strong>Table 1.</strong> PVRBench is the only benchmark with synthetic, spatial, and temporal perturbations across 27 scene categories.</figcaption>
-      </figure>
-      <figure>
-        <!-- Figure 3: smaller PDF height -->
-        <img class="dual-src" data-base="asstes/rova/fig3_perturbation_types" data-exts="jpg,png,pdf" data-h="280" style="max-width:65%; display:block; margin:0 auto;" alt="Figure 3: Four perturbation categories">
-        <figcaption><strong>Figure 3.</strong> Examples of lighting, camera motion, occlusion, and weather perturbations in PVRBench.</figcaption>
-      </figure>
-    </section>
+    <div class="fig-wrap" style="margin-top:1.5rem;">
+      <img src="asstes/rova/fig5_curriculum_analysis.png" alt="Figure 5c: Self-reflective evaluation dynamics">
+      <p class="fig-cap"><strong>Figure 5c.</strong> Dynamics of self-reflective evaluation throughout training. As the model improves, easy samples are increasingly discarded while difficult samples are periodically re-evaluated and reclassified, ensuring the training curriculum adapts to the model's evolving capability.</p>
+    </div>
+  </section>
 
-    <!-- ===== Main results: Table 2 ===== -->
-    <section>
-      <h2>Main Results on PVRBench</h2>
-      <div class="table-responsive">
-        <table>
-          <thead><tr><th>Model</th><th>Size</th><th>Light.</th><th>Occ.</th><th>Shake</th><th>Weather</th><th>Avg. Pert.</th><th>Clean</th><th>Reasoning&uarr;</th></tr></thead>
-          <tbody>
-            <tr><td>GPT-4o</td><td>-</td><td>0.47</td><td>0.50</td><td>0.52</td><td>0.51</td><td>0.50</td><td>0.59</td><td>3.82</td></tr>
-            <tr><td>Gemini-3-Pro</td><td>-</td><td>0.57</td><td>0.52</td><td>0.54</td><td>0.55</td><td>0.55</td><td>0.61</td><td>3.91</td></tr>
-            <tr><td>Video-R1 72B</td><td>72B</td><td>0.51</td><td>0.45</td><td>0.49</td><td>0.49</td><td>0.49</td><td>0.58</td><td>3.68</td></tr>
-            <tr><td>Embodied-R 7B</td><td>7B</td><td>0.45</td><td>0.38</td><td>0.42</td><td>0.43</td><td>0.42</td><td>0.54</td><td>3.45</td></tr>
-            <tr class="highlight"><td><b>ROVA (ours) 7B</b></td><td><b>7B</b></td><td><b>0.52</b></td><td><b>0.46</b></td><td><b>0.49</b></td><td><b>0.51</b></td><td><b>0.50</b></td><td><b>0.55</b></td><td><b>3.58</b></td></tr>
-            <tr><td>Qwen2.5-VL 7B</td><td>7B</td><td>0.35</td><td>0.28</td><td>0.34</td><td>0.34</td><td>0.33</td><td>0.51</td><td>3.41</td></tr>
-            <tr class="highlight"><td>+ ROVA 7B</td><td>7B</td><td>0.48</td><td>0.43</td><td>0.47</td><td>0.49</td><td>0.47</td><td>0.53</td><td>3.52</td></tr>
-            <tr class="highlight"><td><b>ROVA (ours) 72B</b></td><td><b>72B</b></td><td><b>0.57</b></td><td><b>0.53</b></td><td><b>0.56</b></td><td><b>0.56</b></td><td><b>0.56</b></td><td><b>0.59</b></td><td><b>3.72</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <figcaption style="margin-top:0.5rem;"><strong>Table 2.</strong> Accuracy under four perturbation types and reasoning quality (0&ndash;5 scale). ROVA consistently outperforms baselines.</figcaption>
-    </section>
+  <!-- ==================== GENERALIZATION ==================== -->
+  <section id="generalization">
+    <div class="section-tag"><span class="dot"></span>Generalization</div>
+    <h2>Cross-Benchmark Generalization</h2>
 
-    <!-- ===== Efficiency ===== -->
-    <section>
-      <h2>Efficiency &amp; Data Economy</h2>
-      <div class="table-responsive" style="max-width:700px; margin:0 auto;">
-        <table>
-          <thead><tr><th>Method</th><th>Data</th><th>GPUs</th><th>GPU-h</th><th>Avg. Acc.</th></tr></thead>
-          <tbody>
-            <tr><td>Video-R1</td><td>425K</td><td>8&times;A100</td><td>339.2</td><td>0.49</td></tr>
-            <tr><td>Na&iuml;ve Dual</td><td>32.5K</td><td>4&times;A100</td><td>142.8</td><td>0.48</td></tr>
-            <tr class="highlight"><td>ROVA</td><td>32.5K</td><td>4&times;A100</td><td>134.4</td><td>0.53</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <figcaption><strong>Table 3.</strong> ROVA achieves higher accuracy with 60% fewer GPU hours and 8&times; less data than Video-R1.</figcaption>
-    </section>
+    <div class="fig-wrap">
+      <img src="asstes/rova/fig19_cross_benchmark.png" alt="Figure 19: VisBench and UrbanVideo results">
+      <p class="fig-cap"><strong>Figure 19.</strong> ROVA generalizes beyond PVRBench: accuracy improvements of <strong>+14.6%</strong> on VisBench and <strong>+12.9%</strong> on UrbanVideo under perturbations, with additional gains on clean (unperturbed) evaluation as well. Both 7B and 13B configurations show consistent improvements across all perturbation types.</p>
+    </div>
+  </section>
 
-    <!-- ===== Ablation ===== -->
-    <section>
-      <h2>Ablation and Analysis</h2>
-      <div class="grid-2">
-        <figure>
-          <img class="dual-src" data-base="asstes/rova/fig5a_ablation_components.png" data-h="360" alt="Figure 5a: Component ablation">
-          <figcaption><strong>Figure 5a.</strong> Contribution of each ROVA component. Reasoning reward gives the largest gain.</figcaption>
-        </figure>
-        <figure>
-          <img class="dual-src" data-base="asstes/rova/fig5b_mask_ablation.png" data-h="360" alt="Figure 5b: Mask style generalization">
-          <figcaption><strong>Figure 5b.</strong> Structured masks generalize to unseen perturbations (red bars), outperforming random masking.</figcaption>
-        </figure>
-      </div>
-      <figure>
-        <img class="dual-src" data-base="asstes/rova/fig5_curriculum_analysis" data-h="400" alt="Figure 5c: Self-reflective evaluation dynamics">
-        <figcaption><strong>Figure 5c.</strong> Self-reflective evaluation: easy samples are increasingly discarded, difficult samples re-evaluated and re-classified as training progresses.</figcaption>
-      </figure>
-    </section>
+  <!-- ==================== CASE STUDY ==================== -->
+  <section id="case-study">
+    <div class="section-tag"><span class="dot"></span>Qualitative</div>
+    <h2>Case Study: Reasoning Under Rain</h2>
 
-    <!-- ===== Cross-benchmark ===== -->
-    <section>
-      <h2>Generalization to Other Benchmarks</h2>
-      <figure>
-        <img class="dual-src" data-base="asstes/rova/fig19_cross_benchmark" data-h="400" alt="Figure 19: Gains on VisBench and UrbanVideo">
-        <figcaption><strong>Figure 19.</strong> ROVA improves accuracy on VisBench and UrbanVideo under perturbations by +14.6% and +12.9% on average, and also boosts clean performance.</figcaption>
-      </figure>
-    </section>
+    <div class="fig-wrap">
+      <img src="asstes/rova/case_study.png" alt="Case Study: Navigation and Trajectory Planning under Heavy Rain">
+      <p class="fig-cap"><strong>Case Study.</strong> Two qualitative examples of ROVA reasoning under heavy rain perturbation. <strong>Left:</strong> Navigation under heavy rain &mdash; the model correctly identifies the path from a park to a store through occluded urban scenes. <strong>Right:</strong> Trajectory planning &mdash; the model reasons about spatial relationships in rain-degraded video frames to determine the correct approach direction toward a tower crane. Both examples demonstrate coherent question understanding, accurate answer generation, and faithful chain-of-thought reasoning despite severe visual degradation.</p>
+    </div>
+  </section>
 
-    <!-- ===== BibTeX ===== -->
-    <section>
-      <h2>Citation</h2>
-      <div class="bibtex">
-        <pre>@article{he2026rova,
-  title={Are Video Reasoning Models Ready to Go Outside?},
-  author={He, Yangfan and Boo, Changgyu and Yoon, Jaehong},
-  journal={arXiv preprint arXiv:2603.10652},
-  year={2026}
+  <div class="divider"></div>
+
+  <!-- ==================== CITATION ==================== -->
+  <section id="citation">
+    <div class="section-tag"><span class="dot"></span>Reference</div>
+    <h2>Citation</h2>
+    <p style="color:var(--ink-muted); margin-bottom:1rem;">If you find this work useful in your research, please consider citing:</p>
+    <div class="bibtex-block">
+      <button class="copy-btn" onclick="copyBib(this)">📋 Copy</button>
+      <pre>@article{he2026rova,
+  title   = {Are Video Reasoning Models Ready to Go Outside?},
+  author  = {He, Yangfan and Boo, Changgyu and Yoon, Jaehong},
+  journal = {arXiv preprint arXiv:2603.10652},
+  year    = {2026}
 }</pre>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <hr>
-    <footer>
-      <p>Website template adapted from <a href="#">self-refine-video</a></p>
-    </footer>
-  </main>
+  <div class="divider"></div>
 
-  <!--
-    ==========================================================
-    Image Format Resolver  (PNG / JPG / PDF)
-    ==========================================================
-    data-base  = path WITHOUT extension
-    data-exts  = extensions to try (default: "png,jpg,pdf")
-    data-h     = PDF embed height in px (default: 420)
+  <footer>
+    <p>&copy; 2026 Yangfan He, Changgyu Boo, Jaehong Yoon &middot; <a href="https://arxiv.org/abs/2603.10652">arXiv 2603.10652</a></p>
+  </footer>
 
-    PNG/JPG  -> <img src>
-    PDF      -> <object> with controlled height
-    ==========================================================
-  -->
-  <script>
-  (function () {
-    var RASTER = {'png':1,'jpg':1,'jpeg':1,'svg':1,'webp':1,'gif':1};
-    var DEFAULT_H = 420;   // default PDF embed height (px)
+</main>
 
-    document.querySelectorAll('img.dual-src').forEach(function (img) {
-      var base = img.getAttribute('data-base');
-      if (!base) return;
-      var exts = (img.getAttribute('data-exts') || 'png,jpg,pdf').split(',');
-      var h = parseInt(img.getAttribute('data-h')) || DEFAULT_H;
-      attempt(img, base, exts, 0, h);
-    });
-
-    function attempt(img, base, exts, i, h) {
-      if (i >= exts.length) { img.style.display = 'none'; return; }
-      var ext = exts[i].trim();
-      var url = base + '.' + ext;
-
-      if (RASTER[ext]) {
-        var t = new Image();
-        t.onload  = function () { img.src = url; };
-        t.onerror = function () { attempt(img, base, exts, i + 1, h); };
-        t.src = url;
-      } else if (ext === 'pdf') {
-        var obj = document.createElement('object');
-        obj.data = url;
-        obj.type = 'application/pdf';
-        // Use the per-figure height from data-h
-        obj.style.cssText =
-            'width:100%;'
-          + 'height:' + h + 'px;'
-          + 'border-radius:1.5rem;'
-          + 'box-shadow:0 8px 20px rgba(0,0,0,.08);'
-          + 'display:block;margin:0 auto;';
-
-        var link = document.createElement('p');
-        link.style.cssText = 'padding:2rem;text-align:center;';
-        link.innerHTML =
-          '<a href="' + url + '" target="_blank" '
-        + 'style="color:#2b7fc2;font-weight:600">'
-        + '&#128196; View figure (PDF)</a>';
-        obj.appendChild(link);
-
-        img.parentNode.replaceChild(obj, img);
-      } else {
-        attempt(img, base, exts, i + 1, h);
-      }
-    }
-  })();
-  </script>
+<script>
+function copyBib(btn) {
+  var text = btn.parentElement.querySelector('pre').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '✅ Copied!';
+    setTimeout(function() { btn.textContent = '📋 Copy'; }, 2000);
+  });
+}
+</script>
 </body>
 </html>
