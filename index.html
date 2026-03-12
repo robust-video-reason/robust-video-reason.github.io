@@ -525,25 +525,33 @@
 
   <!-- ==================== ABLATION ==================== -->
   <section id="ablation">
-    <div class="section-tag"><span class="dot"></span>Analysis</div>
-    <h2>Ablation Studies</h2>
+  <div class="section-tag"><span class="dot"></span>Analysis</div>
+  <h2>Ablation Studies</h2>
 
-    <div class="grid-2">
-      <div class="fig-wrap" style="margin-bottom:0;">
-        <img src="asstes/rova/fig5a_ablation_components.png" alt="Figure 5a: Component ablation">
-        <p class="fig-cap"><strong>Figure 5a.</strong> Contribution of each ROVA component. The robustness-aware consistency reward provides the largest single gain, while all components combined yield the best performance.</p>
-      </div>
-      <div class="fig-wrap" style="margin-bottom:0;">
-        <img src="asstes/rova/fig5b_mask_ablation.png" alt="Figure 5b: Mask style generalization">
-        <p class="fig-cap"><strong>Figure 5b.</strong> Structured masks generalize to unseen perturbation types (hatched bars), significantly outperforming random masking across all corruption categories.</p>
-      </div>
+  <div style="display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+    <!-- Figure5a -->
+    <div style="flex: 1 1 0; min-width: 200px;">
+      <img src="asstes/rova/fig5a_ablation_components.png" alt="Figure 5a: Component ablation" style="width:100%; height:auto;">
+      <p class="fig-cap">
+        <strong>Figure 5a.</strong> Contribution of each ROVA component. The robustness‑aware consistency reward yields the largest individual gain, and combining all components achieves the best overall performance.
+      </p>
     </div>
-
-    <div class="fig-wrap" style="margin-top:1.5rem;">
-      <img src="asstes/rova/fig5_curriculum_analysis.png" alt="Figure 5c: Self-reflective evaluation dynamics">
-      <p class="fig-cap"><strong>Figure 5c.</strong> Dynamics of self-reflective evaluation throughout training. As the model improves, easy samples are increasingly discarded while difficult samples are periodically re-evaluated and reclassified, ensuring the training curriculum adapts to the model's evolving capability.</p>
+    <!-- Figure5b -->
+    <div style="flex: 1 1 0; min-width: 200px;">
+      <img src="asstes/rova/fig5b_mask_ablation.png" alt="Figure 5b: Mask style generalization" style="width:100%; height:auto;">
+      <p class="fig-cap">
+        <strong>Figure 5b.</strong> Structured masks generalize to unseen perturbation types (hatched bars), consistently outperforming random masking across all corruption categories.
+      </p>
     </div>
-  </section>
+    <!-- Figure55c -->
+    <div style="flex: 1 1 0; min-width: 200px;">
+      <img src="asstes/rova/fig5_curriculum_analysis.png" alt="Figure 5c: Self-reflective evaluation dynamics" style="width:100%; height:auto;">
+      <p class="fig-cap">
+        <strong>Figure 5c.</strong> Dynamics of self‑reflective evaluation throughout training. As the model improves, easy samples are progressively discarded while difficult samples are periodically re‑evaluated and re‑classified, ensuring the training curriculum continuously adapts to the model’s evolving capability.
+      </p>
+    </div>
+  </div>
+</section>
 
   <!-- ==================== GENERALIZATION ==================== -->
   <section id="generalization">
