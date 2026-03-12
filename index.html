@@ -227,7 +227,7 @@
     <section>
       <h2>Motivation: VLMs Fail Under Realistic Perturbations</h2>
       <figure>
-        <img src="./assets/rova/fig1_failure_cases.pdf" alt="Figure 1: Failure cases of baseline model under occlusion and fog">
+        <img src="./asstes/rova/fig1_failure_cases.pdf" alt="Figure 1: Failure cases of baseline model under occlusion and fog">
         <figcaption><strong>Figure 1.</strong> Failure cases of Qwen2.5‑VL under occlusion (left) and fog (right). The model incorrectly predicts "Turn Left" or "Turn Right" instead of the ground‑truth "Go Ahead". These examples motivate robustness‑aware training.</figcaption>
       </figure>
     </section>
@@ -236,7 +236,7 @@
     <section>
       <h2>ROVA: Robust Video Alignment</h2>
       <figure>
-        <img src="assets/rova/fig2_overview.pdf" alt="Figure 2: Overview of ROVA framework">
+        <img src="asstes/rova/fig2_overview.pdf" alt="Figure 2: Overview of ROVA framework">
         <figcaption><strong>Figure 2.</strong> ROVA consists of (1) structured spatio‑temporal corruption, (2) self‑reflective difficulty‑aware training, and (3) dual‑branch alignment with GRPO.</figcaption>
       </figure>
       <div class="grid-2">
@@ -262,11 +262,11 @@
     <section>
       <h2>PVRBench: Perturbed Video Reasoning Benchmark</h2>
       <figure>
-        <img src="assets/rova/table1_benchmark_comparison.png" alt="Table 1: Comparison with existing benchmarks">
+        <img src="asstes/rova/table1_benchmark_comparison.png" alt="Table 1: Comparison with existing benchmarks">
         <figcaption><strong>Table 1.</strong> PVRBench is the only benchmark with synthetic, spatial, and temporal perturbations across 27 scene categories.</figcaption>
       </figure>
       <figure>
-        <img src="assets/rova/fig3_perturbation_types.jpg" alt="Figure 3: Four perturbation categories">
+        <img src="asstes/rova/fig3_perturbation_types.jpg" alt="Figure 3: Four perturbation categories">
         <figcaption><strong>Figure 3.</strong> Examples of lighting, camera motion, occlusion, and weather perturbations in PVRBench.</figcaption>
       </figure>
     </section>
@@ -313,16 +313,16 @@
       <h2>Ablation and Analysis</h2>
       <div class="grid-2">
         <figure>
-          <img src="assets/rova/fig5a_ablation_components.pdf" alt="Figure 5a: Component ablation">
+          <img src="asstes/rova/fig5a_ablation_components.pdf" alt="Figure 5a: Component ablation">
           <figcaption><strong>Figure 5a.</strong> Contribution of each ROVA component. Reasoning reward gives the largest gain.</figcaption>
         </figure>
         <figure>
-          <img src="assets/rova/fig5b_mask_ablation.pdf" alt="Figure 5b: Mask style generalization">
+          <img src="asstes/rova/fig5b_mask_ablation.pdf" alt="Figure 5b: Mask style generalization">
           <figcaption><strong>Figure 5b.</strong> Structured masks generalize to unseen perturbations (red bars), outperforming random masking.</figcaption>
         </figure>
       </div>
       <figure>
-        <img src="assets/rova/fig5_curriculum_analysis.pdf" alt="Figure 5c: Self-reflective evaluation dynamics">
+        <img src="asstes/rova/fig5_curriculum_analysis.pdf" alt="Figure 5c: Self-reflective evaluation dynamics">
         <figcaption><strong>Figure 5c.</strong> Self‑reflective evaluation: easy samples are increasingly discarded, difficult samples re‑evaluated and re‑classified as training progresses.</figcaption>
       </figure>
     </section>
@@ -333,7 +333,7 @@
     <section>
       <h2>Generalization to Other Benchmarks</h2>
       <figure>
-        <img src="assets/rova/fig19_cross_benchmark.png" alt="Figure 19: Gains on VisBench and UrbanVideo">
+        <img src="asstes/rova/fig19_cross_benchmark.png" alt="Figure 19: Gains on VisBench and UrbanVideo">
         <figcaption><strong>Figure 19.</strong> ROVA improves accuracy on VisBench and UrbanVideo under perturbations by +14.6% and +12.9% on average, and also boosts clean performance.</figcaption>
       </figure>
     </section>
